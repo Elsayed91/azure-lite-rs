@@ -57,7 +57,7 @@ Location: `tests/integration/<service>.rs`
 Test against real Azure ARM APIs. Run locally only:
 
 ```bash
-cargo test --test integration <service> -- --ignored --test-threads=1 --nocapture
+cargo nextest run --test integration <service> -- --ignored --test-threads=1 --nocapture
 ```
 
 ### Integration Test Structure
@@ -136,16 +136,16 @@ Examples:
 
 ```bash
 # All integration tests for a service
-cargo test --test integration compute -- --ignored --test-threads=1 --nocapture
+cargo nextest run --test integration compute -- --ignored --test-threads=1 --nocapture
 
 # Single test
-cargo test --test integration test_virtual_machine_lifecycle -- --ignored --nocapture
+cargo nextest run --test integration test_virtual_machine_lifecycle -- --ignored --nocapture
 
 # Unit tests only (CI)
-cargo test --lib
+cargo nextest run --lib
 
 # All unit + generated tests
-cargo test --lib --all-features
+cargo nextest run --lib --all-features
 ```
 
 ## Quality Checklist
@@ -154,7 +154,7 @@ Before marking work complete:
 
 - [ ] `cargo check` passes
 - [ ] `cargo clippy -- -D warnings` passes
-- [ ] `cargo test --lib` passes
+- [ ] `cargo nextest run --lib` passes
 - [ ] `cargo fmt --check` passes
 - [ ] Integration tests pass for new/changed APIs
 - [ ] `uv run python codegen/verify.py` passes (if manifests changed)

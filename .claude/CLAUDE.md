@@ -11,7 +11,7 @@ Rust edition 2024.
 ```bash
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 cargo fmt --check
 
 # Codegen
@@ -49,7 +49,7 @@ If generated code has a bug:
 1. **To change types or ops**: edit the TOML manifest, then run codegen
 2. **NEVER overwrite existing `src/api/*.rs` files**
 3. **No builders** — use `Default` derive + struct literal pattern
-4. **Integration tests are for local dev only** — CI runs `cargo test --lib`
+4. **Integration tests are for local dev only** — CI runs `cargo nextest run --lib`
 
 ### Authentication
 
@@ -61,7 +61,7 @@ Set `AZURE_SUBSCRIPTION_ID` env var.
 ```bash
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 cargo fmt --check
 ```
 
