@@ -113,7 +113,7 @@ Add test function in `tests/integration/{service_name}.rs`:
 
 ### Step C: Run Integration Test
 ```
-cargo test --test integration {service_name} -- --ignored --test-threads=1 --nocapture
+cargo nextest run --test integration {service_name} -- --ignored --test-threads=1 --nocapture
 ```
 Fix failures (wrong api-version, missing required fields, wrong URL structure). Re-run until passing.
 
@@ -122,7 +122,7 @@ Encode proven behavior with MockClient. Every test verifies actual data — neve
 
 ### Step E: Run Full Test Suite
 ```
-cargo test --lib
+cargo nextest run --lib
 ```
 
 ### Step F: Commit
@@ -144,7 +144,7 @@ feat: add {service_name} {group_name} operations
 ```
 cargo check
 cargo clippy -- -D warnings
-cargo test --lib
+cargo nextest run --lib
 ```
 
 Report results. Fix and re-run if anything fails.
