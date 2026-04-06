@@ -10,7 +10,7 @@ keywords = ["azure", "cloud"]
 categories = ["api-bindings"]
 
 [dependencies]
-cloud-lite-core = { package = "cloud-lite-core-rs", version = "0.1", path = "../cloud-lite-core" }
+cloud-lite-core = { package = "cloud-lite-core-rs", version = "0.1" }
 bytes = "1"
 reqwest = { version = "0.13", features = ["rustls", "json", "form"], default-features = false }
 tokio = { version = "1", features = ["time", "sync", "process"] }
