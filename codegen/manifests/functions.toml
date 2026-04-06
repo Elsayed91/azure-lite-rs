@@ -1,0 +1,388 @@
+# Azure Functions API manifest
+# ARM REST API version: 2023-12-01
+# Source: https://learn.microsoft.com/en-us/rest/api/appservice/
+
+[api]
+name = "functions"
+display_name = "Azure Functions"
+version = "v1"
+api_version = "2023-12-01"
+service_name = "functions"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/appservice/"
+
+[api.client]
+accessor_name = "functions"
+client_struct = "FunctionsClient"
+
+# ============================================================================
+# Function App Types
+# ============================================================================
+
+# --- FunctionAppSiteConfig ---
+[[types]]
+name = "FunctionAppSiteConfig"
+description = "Configuration for an Azure Function App."
+
+[[types.fields]]
+name = "numberOfWorkers"
+type = "integer"
+description = "Number of workers"
+
+[[types.fields]]
+name = "netFrameworkVersion"
+type = "string"
+description = ".NET Framework version"
+
+[[types.fields]]
+name = "linuxFxVersion"
+type = "string"
+description = "Linux app framework and version (e.g. PYTHON|3.11)"
+
+[[types.fields]]
+name = "appCommandLine"
+type = "string"
+description = "App command line to launch"
+
+# --- FunctionAppProperties ---
+[[types]]
+name = "FunctionAppProperties"
+description = "Properties of a Function App site resource."
+
+[[types.fields]]
+name = "state"
+type = "string"
+description = "Current state of the app (Running, Stopped, etc.)"
+
+[[types.fields]]
+name = "hostNames"
+rust_type = "Vec<String>"
+description = "Hostnames associated with the app"
+
+[[types.fields]]
+name = "defaultHostName"
+type = "string"
+description = "Default hostname of the app"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Kind of resource (functionapp, linux)"
+
+[[types.fields]]
+name = "resourceGroup"
+type = "string"
+description = "Resource group the app belongs to"
+
+[[types.fields]]
+name = "serverFarmId"
+type = "string"
+description = "Resource ID of the hosting plan"
+
+[[types.fields]]
+name = "siteConfig"
+rust_type = "FunctionAppSiteConfig"
+description = "Configuration of the app"
+
+# --- FunctionApp ---
+[[types]]
+name = "FunctionApp"
+description = "A Function App resource (Azure Web Sites Site)."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Kind of resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "FunctionAppProperties"
+description = "Function App properties"
+
+# --- FunctionAppListResult ---
+[[types]]
+name = "FunctionAppListResult"
+description = "Result of a list Function Apps operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<FunctionApp>"
+description = "List of Function Apps"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to next page of results"
+
+# --- FunctionAppCreateOrUpdateProperties ---
+[[types]]
+name = "FunctionAppCreateOrUpdateProperties"
+description = "Properties for creating or updating a Function App."
+
+[[types.fields]]
+name = "serverFarmId"
+type = "string"
+description = "Resource ID of the App Service Plan (hosting plan)"
+
+[[types.fields]]
+name = "siteConfig"
+rust_type = "FunctionAppSiteConfig"
+description = "Configuration of the app"
+
+# --- FunctionAppCreateRequest ---
+[[types]]
+name = "FunctionAppCreateRequest"
+description = "Request body for creating or updating a Function App."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Kind of app (functionapp, functionapp,linux)"
+
+[[types.fields]]
+name = "properties"
+rust_type = "FunctionAppCreateOrUpdateProperties"
+description = "Function App create/update properties"
+
+# ============================================================================
+# Function (individual function) Types
+# ============================================================================
+
+# --- FunctionProperties ---
+[[types]]
+name = "FunctionProperties"
+description = "Properties of an individual Azure Function."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Name of the function"
+
+[[types.fields]]
+name = "functionAppId"
+type = "string"
+description = "Function App ID"
+
+[[types.fields]]
+name = "scriptRootPathHref"
+type = "string"
+description = "Script root path href"
+
+[[types.fields]]
+name = "scriptHref"
+type = "string"
+description = "Script href"
+
+[[types.fields]]
+name = "configHref"
+type = "string"
+description = "Config href"
+
+[[types.fields]]
+name = "isDisabled"
+type = "boolean"
+description = "Whether the function is disabled"
+
+# --- Function ---
+[[types]]
+name = "Function"
+description = "An individual Azure Function within a Function App."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the function"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "FunctionProperties"
+description = "Function properties"
+
+# --- FunctionListResult ---
+[[types]]
+name = "FunctionListResult"
+description = "Result of a list Functions operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Function>"
+description = "List of Functions"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to next page of results"
+
+# ============================================================================
+# App Settings Types
+# ============================================================================
+
+# --- AppSettingsResult ---
+[[types]]
+name = "AppSettingsResult"
+description = "Result of listing application settings."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "properties"
+rust_type = "HashMap<String, String>"
+description = "Application settings key-value pairs"
+
+# --- AppSettingsUpdateRequest ---
+[[types]]
+name = "AppSettingsUpdateRequest"
+description = "Request body for updating application settings."
+
+[[types.fields]]
+name = "properties"
+rust_type = "HashMap<String, String>"
+description = "Application settings key-value pairs"
+
+# ============================================================================
+# Function App Operations
+# ============================================================================
+
+[[operations]]
+name = "ListFunctionApps"
+rust_name = "list_function_apps"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Web/sites"
+response_type = "FunctionAppListResult"
+description = "List all Function Apps in the subscription."
+
+[[operations]]
+name = "ListFunctionAppsByResourceGroup"
+rust_name = "list_function_apps_by_resource_group"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites"
+response_type = "FunctionAppListResult"
+description = "List all Function Apps in a resource group."
+
+[[operations]]
+name = "GetFunctionApp"
+rust_name = "get_function_app"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}"
+response_type = "FunctionApp"
+description = "Get a Function App."
+
+[[operations]]
+name = "CreateFunctionApp"
+rust_name = "create_function_app"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}"
+request_body_type = "FunctionAppCreateRequest"
+response_type = "FunctionApp"
+description = "Create or update a Function App."
+
+[[operations]]
+name = "DeleteFunctionApp"
+rust_name = "delete_function_app"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}"
+description = "Delete a Function App."
+
+# ============================================================================
+# Function Operations
+# ============================================================================
+
+[[operations]]
+name = "ListFunctions"
+rust_name = "list_functions"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions"
+response_type = "FunctionListResult"
+description = "List the functions in a Function App."
+
+[[operations]]
+name = "GetFunction"
+rust_name = "get_function"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions/{functionName}"
+response_type = "Function"
+description = "Get a function in a Function App."
+
+# ============================================================================
+# App Settings Operations
+# ============================================================================
+
+[[operations]]
+name = "ListAppSettings"
+rust_name = "list_app_settings"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/appsettings/list"
+response_type = "AppSettingsResult"
+description = "Get the application settings of a Function App."
+
+[[operations]]
+name = "UpdateAppSettings"
+rust_name = "update_app_settings"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/appsettings"
+request_body_type = "AppSettingsUpdateRequest"
+response_type = "AppSettingsResult"
+description = "Update the application settings of a Function App."

@@ -1,0 +1,1148 @@
+# Azure Networking API manifest
+# ARM REST API version: 2024-01-01
+# Source: https://learn.microsoft.com/en-us/rest/api/virtualnetwork/
+
+[api]
+name = "networking"
+display_name = "Azure Networking"
+version = "v1"
+api_version = "2024-01-01"
+service_name = "networking"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/virtualnetwork/"
+
+[api.client]
+accessor_name = "networking"
+client_struct = "NetworkingClient"
+
+# ============================================================================
+# VNet Types
+# ============================================================================
+
+# --- AddressSpace ---
+[[types]]
+name = "AddressSpace"
+description = "AddressSpace contains an array of IP address ranges."
+
+[[types.fields]]
+name = "addressPrefixes"
+rust_type = "Vec<String>"
+description = "A list of address blocks reserved for this virtual network in CIDR notation"
+
+# --- DhcpOptions ---
+[[types]]
+name = "DhcpOptions"
+description = "DhcpOptions contains an array of DNS servers available to VMs."
+
+[[types.fields]]
+name = "dnsServers"
+rust_type = "Vec<String>"
+description = "The list of DNS servers IP addresses"
+
+# --- SubnetPropertiesFormat ---
+[[types]]
+name = "SubnetPropertiesFormat"
+description = "Properties of the subnet."
+
+[[types.fields]]
+name = "addressPrefix"
+type = "string"
+description = "The address prefix for the subnet"
+
+[[types.fields]]
+name = "addressPrefixes"
+rust_type = "Vec<String>"
+description = "List of address prefixes for the subnet"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the subnet resource"
+
+[[types.fields]]
+name = "privateEndpointNetworkPolicies"
+type = "string"
+description = "Enable or Disable apply network policies on private endpoint in the subnet"
+
+[[types.fields]]
+name = "privateLinkServiceNetworkPolicies"
+type = "string"
+description = "Enable or Disable apply network policies on private link service in the subnet"
+
+[[types.fields]]
+name = "networkSecurityGroup"
+rust_type = "SubResource"
+description = "The reference to the NetworkSecurityGroup resource"
+
+# --- Subnet ---
+[[types]]
+name = "Subnet"
+description = "Subnet in a virtual network resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within a resource group"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "A unique read-only string that changes whenever the resource is updated"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SubnetPropertiesFormat"
+description = "Properties of the subnet"
+
+# --- SubResource ---
+[[types]]
+name = "SubResource"
+description = "Reference to another sub resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+# --- VirtualNetworkPropertiesFormat ---
+[[types]]
+name = "VirtualNetworkPropertiesFormat"
+description = "Properties of the virtual network."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the virtual network resource"
+
+[[types.fields]]
+name = "addressSpace"
+rust_type = "AddressSpace"
+description = "The AddressSpace that contains an array of IP address ranges"
+
+[[types.fields]]
+name = "dhcpOptions"
+rust_type = "DhcpOptions"
+description = "The dhcpOptions that contains an array of DNS servers"
+
+[[types.fields]]
+name = "subnets"
+rust_type = "Vec<Subnet>"
+description = "A list of subnets in a Virtual Network"
+
+[[types.fields]]
+name = "virtualNetworkPeerings"
+rust_type = "Vec<VirtualNetworkPeering>"
+description = "A list of peerings in a Virtual Network"
+
+[[types.fields]]
+name = "enableDdosProtection"
+type = "boolean"
+description = "Indicates if DDoS protection is enabled for all the protected resources in the virtual network"
+
+[[types.fields]]
+name = "enableVmProtection"
+type = "boolean"
+description = "Indicates if VM protection is enabled for all the subnets in the virtual network"
+
+# --- VirtualNetworkPeering ---
+[[types]]
+name = "VirtualNetworkPeering"
+description = "Peerings in a virtual network resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within a resource group"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualNetworkPeeringPropertiesFormat"
+description = "Properties of the virtual network peering"
+
+# --- VirtualNetworkPeeringPropertiesFormat ---
+[[types]]
+name = "VirtualNetworkPeeringPropertiesFormat"
+description = "Properties of the virtual network peering."
+
+[[types.fields]]
+name = "allowVirtualNetworkAccess"
+type = "boolean"
+description = "Whether the VMs in the local virtual network space would be able to access the VMs in remote virtual network space"
+
+[[types.fields]]
+name = "allowForwardedTraffic"
+type = "boolean"
+description = "Whether the forwarded traffic from the VMs in the local virtual network will be allowed/disallowed in remote virtual network"
+
+[[types.fields]]
+name = "peeringState"
+type = "string"
+description = "The status of the virtual network peering"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the virtual network peering resource"
+
+[[types.fields]]
+name = "remoteVirtualNetwork"
+rust_type = "SubResource"
+description = "The reference to the remote virtual network"
+
+# --- VirtualNetwork (top-level resource) ---
+[[types]]
+name = "VirtualNetwork"
+description = "Virtual Network resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "A unique read-only string that changes whenever the resource is updated"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualNetworkPropertiesFormat"
+description = "Properties of the virtual network"
+
+# --- VirtualNetworkListResult ---
+[[types]]
+name = "VirtualNetworkListResult"
+description = "Response for the ListVirtualNetworks API service call."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<VirtualNetwork>"
+description = "A list of VirtualNetwork resources in a resource group"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# --- VirtualNetworkCreateRequest ---
+[[types]]
+name = "VirtualNetworkCreateRequest"
+description = "Request body for creating or updating a virtual network."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualNetworkPropertiesFormat"
+description = "Properties of the virtual network"
+
+# --- SubnetListResult ---
+[[types]]
+name = "SubnetListResult"
+description = "Response for ListSubnets API service call."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Subnet>"
+description = "The subnets in a virtual network"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# ============================================================================
+# NSG Types
+# ============================================================================
+
+# --- SecurityRulePropertiesFormat ---
+[[types]]
+name = "SecurityRulePropertiesFormat"
+description = "Security rule resource."
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "A description for this rule"
+
+[[types.fields]]
+name = "protocol"
+type = "string"
+description = "Network protocol this rule applies to (Tcp, Udp, Icmp, Esp, Ah, *)"
+
+[[types.fields]]
+name = "sourcePortRange"
+type = "string"
+description = "The source port or range"
+
+[[types.fields]]
+name = "destinationPortRange"
+type = "string"
+description = "The destination port or range"
+
+[[types.fields]]
+name = "sourceAddressPrefix"
+type = "string"
+description = "The CIDR or source IP range"
+
+[[types.fields]]
+name = "destinationAddressPrefix"
+type = "string"
+description = "The destination address prefix"
+
+[[types.fields]]
+name = "sourcePortRanges"
+rust_type = "Vec<String>"
+description = "The source port ranges"
+
+[[types.fields]]
+name = "destinationPortRanges"
+rust_type = "Vec<String>"
+description = "The destination port ranges"
+
+[[types.fields]]
+name = "sourceAddressPrefixes"
+rust_type = "Vec<String>"
+description = "The CIDR or source IP ranges"
+
+[[types.fields]]
+name = "destinationAddressPrefixes"
+rust_type = "Vec<String>"
+description = "The destination address prefixes"
+
+[[types.fields]]
+name = "access"
+type = "string"
+description = "The network traffic is allowed or denied (Allow, Deny)"
+
+[[types.fields]]
+name = "priority"
+type = "integer"
+description = "The priority of the rule (100–4096)"
+
+[[types.fields]]
+name = "direction"
+type = "string"
+description = "The direction of the rule (Inbound, Outbound)"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the security rule resource"
+
+# --- SecurityRule ---
+[[types]]
+name = "SecurityRule"
+description = "Network security rule."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within a resource group"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "A unique read-only string that changes whenever the resource is updated"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SecurityRulePropertiesFormat"
+description = "Properties of the security rule"
+
+# --- SecurityRuleListResult ---
+[[types]]
+name = "SecurityRuleListResult"
+description = "Response for ListSecurityRule API service call."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SecurityRule>"
+description = "The security rules in a network security group"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# --- NetworkSecurityGroupPropertiesFormat ---
+[[types]]
+name = "NetworkSecurityGroupPropertiesFormat"
+description = "Network Security Group resource."
+
+[[types.fields]]
+name = "securityRules"
+rust_type = "Vec<SecurityRule>"
+description = "A collection of security rules of the network security group"
+
+[[types.fields]]
+name = "defaultSecurityRules"
+rust_type = "Vec<SecurityRule>"
+description = "The default security rules of network security group"
+
+[[types.fields]]
+name = "networkInterfaces"
+rust_type = "Vec<SubResource>"
+description = "A collection of references to network interfaces"
+
+[[types.fields]]
+name = "subnets"
+rust_type = "Vec<SubResource>"
+description = "A collection of references to subnets"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the network security group resource"
+
+[[types.fields]]
+name = "resourceGuid"
+type = "string"
+description = "The resource GUID property of the network security group resource"
+
+# --- NetworkSecurityGroup (top-level resource) ---
+[[types]]
+name = "NetworkSecurityGroup"
+description = "NetworkSecurityGroup resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "A unique read-only string that changes whenever the resource is updated"
+
+[[types.fields]]
+name = "properties"
+rust_type = "NetworkSecurityGroupPropertiesFormat"
+description = "Properties of the network security group"
+
+# --- NetworkSecurityGroupListResult ---
+[[types]]
+name = "NetworkSecurityGroupListResult"
+description = "Response for ListNetworkSecurityGroups API service call."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<NetworkSecurityGroup>"
+description = "A list of NetworkSecurityGroup resources"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# --- NetworkSecurityGroupCreateRequest ---
+[[types]]
+name = "NetworkSecurityGroupCreateRequest"
+description = "Request body for creating or updating a network security group."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "NetworkSecurityGroupPropertiesFormat"
+description = "Properties of the network security group"
+
+# ============================================================================
+# VNet Operations
+# ============================================================================
+
+[[operations]]
+name = "ListVNets"
+rust_name = "list_vnets"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks"
+response_type = "VirtualNetworkListResult"
+description = "Gets all virtual networks in a resource group."
+
+[[operations]]
+name = "ListVNetsAll"
+rust_name = "list_vnets_all"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks"
+response_type = "VirtualNetworkListResult"
+description = "Gets all virtual networks in a subscription."
+
+[[operations]]
+name = "GetVNet"
+rust_name = "get_vnet"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}"
+response_type = "VirtualNetwork"
+description = "Gets the specified virtual network by resource group."
+
+[[operations.query_params]]
+name = "$expand"
+rust_name = "expand"
+description = "Expands referenced resources"
+
+[[operations]]
+name = "CreateVNet"
+rust_name = "create_vnet"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}"
+request_body_type = "VirtualNetworkCreateRequest"
+response_type = "VirtualNetwork"
+description = "Creates or updates a virtual network in the specified resource group."
+
+[[operations]]
+name = "DeleteVNet"
+rust_name = "delete_vnet"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}"
+description = "Deletes the specified virtual network."
+
+[[operations]]
+name = "ListSubnets"
+rust_name = "list_subnets"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets"
+response_type = "SubnetListResult"
+description = "Gets all subnets in a virtual network."
+
+[[operations]]
+name = "GetSubnet"
+rust_name = "get_subnet"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}/subnets/{subnetName}"
+response_type = "Subnet"
+description = "Gets the specified subnet by virtual network and resource group."
+
+[[operations.query_params]]
+name = "$expand"
+rust_name = "expand"
+description = "Expands referenced resources"
+
+# ============================================================================
+# NSG Operations
+# ============================================================================
+
+[[operations]]
+name = "ListNSGs"
+rust_name = "list_nsgs"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups"
+response_type = "NetworkSecurityGroupListResult"
+description = "Gets all network security groups in a resource group."
+
+[[operations]]
+name = "ListNSGsAll"
+rust_name = "list_nsgs_all"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups"
+response_type = "NetworkSecurityGroupListResult"
+description = "Gets all network security groups in a subscription."
+
+[[operations]]
+name = "GetNSG"
+rust_name = "get_nsg"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}"
+response_type = "NetworkSecurityGroup"
+description = "Gets the specified network security group."
+
+[[operations.query_params]]
+name = "$expand"
+rust_name = "expand"
+description = "Expands referenced resources"
+
+[[operations]]
+name = "CreateNSG"
+rust_name = "create_nsg"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}"
+request_body_type = "NetworkSecurityGroupCreateRequest"
+response_type = "NetworkSecurityGroup"
+description = "Creates or updates a network security group in the specified resource group."
+
+[[operations]]
+name = "DeleteNSG"
+rust_name = "delete_nsg"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}"
+description = "Deletes the specified network security group."
+
+[[operations]]
+name = "ListSecurityRules"
+rust_name = "list_security_rules"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}/securityRules"
+response_type = "SecurityRuleListResult"
+description = "Gets all security rules in a network security group."
+
+[[operations]]
+name = "GetSecurityRule"
+rust_name = "get_security_rule"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}/securityRules/{securityRuleName}"
+response_type = "SecurityRule"
+description = "Get the specified network security rule."
+
+[[operations]]
+name = "CreateSecurityRule"
+rust_name = "create_security_rule"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}/securityRules/{securityRuleName}"
+request_body_type = "SecurityRule"
+response_type = "SecurityRule"
+description = "Creates or updates a security rule in the specified network security group."
+
+[[operations]]
+name = "DeleteSecurityRule"
+rust_name = "delete_security_rule"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}/securityRules/{securityRuleName}"
+description = "Deletes the specified network security rule."
+
+# ============================================================================
+# Load Balancer Types
+# ============================================================================
+
+# --- FrontendIPConfiguration ---
+[[types]]
+name = "FrontendIPConfiguration"
+description = "Frontend IP address of the load balancer."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within a resource group"
+
+[[types.fields]]
+name = "properties"
+rust_type = "FrontendIPConfigurationPropertiesFormat"
+description = "Properties of the frontend IP configuration"
+
+# --- FrontendIPConfigurationPropertiesFormat ---
+[[types]]
+name = "FrontendIPConfigurationPropertiesFormat"
+description = "Properties of Frontend IP Configuration of the load balancer."
+
+[[types.fields]]
+name = "privateIPAddress"
+type = "string"
+serde_rename = "privateIPAddress"
+description = "The private IP address of the IP configuration"
+
+[[types.fields]]
+name = "privateIPAllocationMethod"
+type = "string"
+serde_rename = "privateIPAllocationMethod"
+description = "The Private IP allocation method (Dynamic or Static)"
+
+[[types.fields]]
+name = "subnet"
+rust_type = "SubResource"
+description = "The reference to the subnet resource"
+
+[[types.fields]]
+name = "publicIPAddress"
+rust_type = "SubResource"
+serde_rename = "publicIPAddress"
+description = "The reference to the Public IP resource"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the frontend IP configuration resource"
+
+# --- BackendAddressPool ---
+[[types]]
+name = "BackendAddressPool"
+description = "Pool of backend IP addresses."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within the set of backend address pools used by the load balancer"
+
+[[types.fields]]
+name = "properties"
+rust_type = "BackendAddressPoolPropertiesFormat"
+description = "Properties of load balancer backend address pool"
+
+# --- BackendAddressPoolPropertiesFormat ---
+[[types]]
+name = "BackendAddressPoolPropertiesFormat"
+description = "Properties of the backend address pool."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the backend address pool resource"
+
+[[types.fields]]
+name = "loadBalancerBackendAddresses"
+rust_type = "Vec<LoadBalancerBackendAddress>"
+description = "An array of backend addresses"
+
+# --- LoadBalancerBackendAddress ---
+[[types]]
+name = "LoadBalancerBackendAddress"
+description = "Load balancer backend addresses."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Name of the backend address"
+
+[[types.fields]]
+name = "properties"
+rust_type = "LoadBalancerBackendAddressPropertiesFormat"
+description = "Properties of load balancer backend address"
+
+# --- LoadBalancerBackendAddressPropertiesFormat ---
+[[types]]
+name = "LoadBalancerBackendAddressPropertiesFormat"
+description = "Properties of the load balancer backend addresses."
+
+[[types.fields]]
+name = "ipAddress"
+type = "string"
+description = "IP Address belonging to the referenced virtual network"
+
+[[types.fields]]
+name = "virtualNetwork"
+rust_type = "SubResource"
+description = "Reference to an existing virtual network"
+
+# --- Probe ---
+[[types]]
+name = "Probe"
+description = "A load balancer probe."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within the set of probes used by the load balancer"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ProbePropertiesFormat"
+description = "Properties of load balancer probe"
+
+# --- ProbePropertiesFormat ---
+[[types]]
+name = "ProbePropertiesFormat"
+description = "Load balancer probe resource."
+
+[[types.fields]]
+name = "protocol"
+type = "string"
+description = "The protocol of the end point (Http, Https, Tcp)"
+
+[[types.fields]]
+name = "port"
+type = "integer"
+description = "The port for communicating the probe"
+
+[[types.fields]]
+name = "intervalInSeconds"
+type = "integer"
+description = "The interval, in seconds, for how frequently to probe the endpoint for health status"
+
+[[types.fields]]
+name = "numberOfProbes"
+type = "integer"
+description = "The number of probes where if no response, will result in stopping further traffic from being delivered to the endpoint"
+
+[[types.fields]]
+name = "requestPath"
+type = "string"
+description = "The URI used for requesting health status from the VM (Http/Https only)"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the probe resource"
+
+# --- LoadBalancingRule ---
+[[types]]
+name = "LoadBalancingRule"
+description = "A load balancing rule for a load balancer."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource that is unique within the set of load balancing rules used by the load balancer"
+
+[[types.fields]]
+name = "properties"
+rust_type = "LoadBalancingRulePropertiesFormat"
+description = "Properties of load balancer load balancing rule"
+
+# --- LoadBalancingRulePropertiesFormat ---
+[[types]]
+name = "LoadBalancingRulePropertiesFormat"
+description = "Properties of the load balancer."
+
+[[types.fields]]
+name = "protocol"
+type = "string"
+description = "The reference to the transport protocol used by the load balancing rule (Tcp, Udp, All)"
+
+[[types.fields]]
+name = "frontendPort"
+type = "integer"
+description = "The port for the external endpoint"
+
+[[types.fields]]
+name = "backendPort"
+type = "integer"
+description = "The port used for internal connections on the endpoint"
+
+[[types.fields]]
+name = "frontendIPConfiguration"
+rust_type = "SubResource"
+description = "A reference to frontend IP addresses"
+
+[[types.fields]]
+name = "backendAddressPool"
+rust_type = "SubResource"
+description = "A reference to a pool of DIPs"
+
+[[types.fields]]
+name = "probe"
+rust_type = "SubResource"
+description = "The reference to the load balancer probe used by the load balancing rule"
+
+[[types.fields]]
+name = "enableFloatingIP"
+type = "boolean"
+description = "Configures a virtual machine's endpoint for the floating IP capability required to configure a SQL AlwaysOn Availability Group"
+
+[[types.fields]]
+name = "idleTimeoutInMinutes"
+type = "integer"
+description = "The timeout for the TCP idle connection"
+
+[[types.fields]]
+name = "loadDistribution"
+type = "string"
+description = "The load distribution policy for this rule (Default, SourceIP, SourceIPProtocol)"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the load balancing rule resource"
+
+# --- LoadBalancerSku ---
+[[types]]
+name = "LoadBalancerSku"
+description = "SKU of a load balancer."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Name of a load balancer SKU (Basic, Standard, Gateway)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "Tier of a load balancer SKU (Regional, Global)"
+
+# --- LoadBalancerPropertiesFormat ---
+[[types]]
+name = "LoadBalancerPropertiesFormat"
+description = "Properties of the load balancer."
+
+[[types.fields]]
+name = "frontendIPConfigurations"
+rust_type = "Vec<FrontendIPConfiguration>"
+serde_rename = "frontendIPConfigurations"
+description = "Object representing the frontend IPs to be used for the load balancer"
+
+[[types.fields]]
+name = "backendAddressPools"
+rust_type = "Vec<BackendAddressPool>"
+description = "Collection of backend address pools used by a load balancer"
+
+[[types.fields]]
+name = "probes"
+rust_type = "Vec<Probe>"
+description = "Collection of probe objects used in the load balancer"
+
+[[types.fields]]
+name = "loadBalancingRules"
+rust_type = "Vec<LoadBalancingRule>"
+description = "Object collection representing the load balancing rules Gets the provisioning"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the load balancer resource"
+
+[[types.fields]]
+name = "resourceGuid"
+type = "string"
+description = "The resource GUID property of the load balancer resource"
+
+# --- LoadBalancer (top-level resource) ---
+[[types]]
+name = "LoadBalancer"
+description = "LoadBalancer resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "A unique read-only string that changes whenever the resource is updated"
+
+[[types.fields]]
+name = "sku"
+rust_type = "LoadBalancerSku"
+description = "The load balancer SKU"
+
+[[types.fields]]
+name = "properties"
+rust_type = "LoadBalancerPropertiesFormat"
+description = "Properties of load balancer"
+
+# --- LoadBalancerListResult ---
+[[types]]
+name = "LoadBalancerListResult"
+description = "Response for ListLoadBalancers API service call."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<LoadBalancer>"
+description = "A list of load balancers in a resource group"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# --- LoadBalancerCreateRequest ---
+[[types]]
+name = "LoadBalancerCreateRequest"
+description = "Request body for creating or updating a load balancer."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "LoadBalancerSku"
+description = "The load balancer SKU"
+
+[[types.fields]]
+name = "properties"
+rust_type = "LoadBalancerPropertiesFormat"
+description = "Properties of load balancer"
+
+# ============================================================================
+# Load Balancer Operations
+# ============================================================================
+
+[[operations]]
+name = "ListLoadBalancers"
+rust_name = "list_load_balancers"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers"
+response_type = "LoadBalancerListResult"
+description = "Gets all the load balancers in a resource group."
+
+[[operations]]
+name = "ListLoadBalancersAll"
+rust_name = "list_load_balancers_all"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers"
+response_type = "LoadBalancerListResult"
+description = "Gets all the load balancers in a subscription."
+
+[[operations]]
+name = "GetLoadBalancer"
+rust_name = "get_load_balancer"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}"
+response_type = "LoadBalancer"
+description = "Gets the specified load balancer."
+
+[[operations.query_params]]
+name = "$expand"
+rust_name = "expand"
+description = "Expands referenced resources"
+
+[[operations]]
+name = "CreateLoadBalancer"
+rust_name = "create_load_balancer"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}"
+request_body_type = "LoadBalancerCreateRequest"
+response_type = "LoadBalancer"
+description = "Creates or updates a load balancer."
+
+[[operations]]
+name = "DeleteLoadBalancer"
+rust_name = "delete_load_balancer"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/loadBalancers/{loadBalancerName}"
+description = "Deletes the specified load balancer."
+
+# ============================================================================
+# Network Interface Operations
+# ============================================================================
+
+[[operations]]
+name = "DeleteNetworkInterface"
+rust_name = "delete_network_interface"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}"
+description = "Deletes the specified network interface."
+
+# ============================================================================
+# NAT Gateway Operations
+# ============================================================================
+
+[[operations]]
+name = "DeleteNatGateway"
+rust_name = "delete_nat_gateway"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/natGateways/{natGatewayName}"
+description = "Deletes the specified NAT gateway."

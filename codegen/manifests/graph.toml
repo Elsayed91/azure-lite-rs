@@ -1,0 +1,117 @@
+# Microsoft Graph API manifest
+# Source: https://learn.microsoft.com/en-us/graph/api/user-get
+#
+# NOTE: Graph uses a DIFFERENT OAuth2 scope from ARM:
+#   ARM:   https://management.azure.com/.default
+#   Graph: https://graph.microsoft.com/.default
+#
+# The generated types are used by the hand-written api/graph.rs client,
+# which acquires Graph-scoped tokens via AzureHttpClient::graph_get/graph_post.
+# No [[operations]] are declared — HTTP is handled entirely in the API layer.
+
+[api]
+name = "graph"
+display_name = "Microsoft Graph"
+version = "v1"
+api_version = "v1.0"
+service_name = "graph"
+wire_format = "azure_rest_json"
+base_url = "https://graph.microsoft.com"
+doc_url = "https://learn.microsoft.com/en-us/graph/api/overview"
+
+[api.client]
+accessor_name = "graph"
+client_struct = "GraphClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- GraphUser ---
+[[types]]
+name = "GraphUser"
+description = "An Entra ID (Azure AD) user object returned by Microsoft Graph."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The unique identifier for the user (object ID / principal ID)."
+
+[[types.fields]]
+name = "displayName"
+type = "string"
+description = "The display name of the user."
+
+[[types.fields]]
+name = "userPrincipalName"
+type = "string"
+description = "The user principal name (UPN). External/guest users have '#EXT#' in their UPN."
+
+[[types.fields]]
+name = "userType"
+type = "string"
+description = "User type: 'Member' for internal users, 'Guest' for external/invited users."
+
+# --- GraphBatchRequestItem ---
+[[types]]
+name = "GraphBatchRequestItem"
+description = "A single request within a Microsoft Graph batch."
+
+[[types.fields]]
+name = "id"
+type = "string"
+required = true
+description = "Unique identifier for this request within the batch (used to correlate responses)."
+
+[[types.fields]]
+name = "method"
+type = "string"
+required = true
+description = "HTTP method for this request (e.g. 'GET')."
+
+[[types.fields]]
+name = "url"
+type = "string"
+required = true
+description = "Relative URL for this request (e.g. '/users/{id}')."
+
+# --- GraphBatchRequest ---
+[[types]]
+name = "GraphBatchRequest"
+description = "Request body for a Microsoft Graph batch operation ($batch)."
+
+[[types.fields]]
+name = "requests"
+rust_type = "Vec<GraphBatchRequestItem>"
+required = true
+description = "List of individual requests to execute in the batch (max 20 per batch)."
+
+# --- GraphBatchResponseItem ---
+[[types]]
+name = "GraphBatchResponseItem"
+description = "A single response within a Microsoft Graph batch response."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Correlates to the request item ID."
+
+[[types.fields]]
+name = "status"
+type = "integer"
+description = "HTTP status code for this individual response."
+
+[[types.fields]]
+name = "body"
+type = "object"
+description = "The response body for this item (parsed as JSON)."
+
+# --- GraphBatchResponse ---
+[[types]]
+name = "GraphBatchResponse"
+description = "Response from a Microsoft Graph batch operation ($batch)."
+
+[[types.fields]]
+name = "responses"
+rust_type = "Vec<GraphBatchResponseItem>"
+description = "List of individual responses, one per request in the batch."

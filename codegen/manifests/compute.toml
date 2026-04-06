@@ -1,0 +1,1610 @@
+# Azure Compute API manifest
+# ARM REST API version: 2024-07-01 (valid for both Managed Disks and VMs)
+# Note: 2024-03-02 was a valid disk-only version; 2024-07-01 covers both.
+# Source: https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines
+
+[api]
+name = "compute"
+display_name = "Azure Compute"
+version = "v1"
+api_version = "2024-07-01"
+service_name = "compute"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/compute/"
+
+[api.client]
+accessor_name = "compute"
+client_struct = "ComputeClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- VirtualMachine (top-level resource) ---
+[[types]]
+name = "VirtualMachine"
+description = "An Azure virtual machine resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "zones"
+rust_type = "Vec<String>"
+description = "Availability zones"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineProperties"
+description = "VM properties"
+
+# --- VirtualMachineProperties ---
+[[types]]
+name = "VirtualMachineProperties"
+description = "Properties of a virtual machine."
+
+[[types.fields]]
+name = "vmId"
+type = "string"
+description = "Unique VM identifier"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state (Succeeded, Failed, etc.)"
+
+[[types.fields]]
+name = "hardwareProfile"
+rust_type = "HardwareProfile"
+description = "Hardware profile (VM size)"
+
+[[types.fields]]
+name = "storageProfile"
+rust_type = "StorageProfile"
+description = "Storage profile (disks, image)"
+
+[[types.fields]]
+name = "osProfile"
+rust_type = "OsProfile"
+description = "OS profile (admin user, computer name)"
+
+[[types.fields]]
+name = "networkProfile"
+rust_type = "NetworkProfile"
+description = "Network profile (NICs)"
+
+[[types.fields]]
+name = "diagnosticsProfile"
+rust_type = "DiagnosticsProfile"
+description = "Diagnostics profile (boot diagnostics)"
+
+[[types.fields]]
+name = "licenseType"
+type = "string"
+description = "License type for hybrid benefit"
+
+[[types.fields]]
+name = "priority"
+type = "string"
+description = "VM priority (Regular, Low, Spot)"
+
+[[types.fields]]
+name = "evictionPolicy"
+type = "string"
+description = "Eviction policy for Spot VMs"
+
+[[types.fields]]
+name = "timeCreated"
+type = "datetime"
+description = "Time when the VM was created"
+
+[[types.fields]]
+name = "instanceView"
+rust_type = "VirtualMachineInstanceView"
+description = "Instance view status (when $expand=instanceView)"
+
+# --- HardwareProfile ---
+[[types]]
+name = "HardwareProfile"
+description = "Specifies the hardware settings for the virtual machine."
+
+[[types.fields]]
+name = "vmSize"
+type = "string"
+description = "VM size name (e.g. Standard_D2s_v3)"
+
+# --- StorageProfile ---
+[[types]]
+name = "StorageProfile"
+description = "Storage profile for a VM."
+
+[[types.fields]]
+name = "imageReference"
+rust_type = "ImageReference"
+description = "Image reference for the OS disk"
+
+[[types.fields]]
+name = "osDisk"
+rust_type = "OsDisk"
+description = "OS disk settings"
+
+[[types.fields]]
+name = "dataDisks"
+rust_type = "Vec<DataDisk>"
+description = "Data disks attached to the VM"
+
+# --- ImageReference ---
+[[types]]
+name = "ImageReference"
+description = "Reference to a platform or marketplace image."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID of a shared gallery image"
+
+[[types.fields]]
+name = "publisher"
+type = "string"
+description = "Image publisher"
+
+[[types.fields]]
+name = "offer"
+type = "string"
+description = "Image offer"
+
+[[types.fields]]
+name = "sku"
+type = "string"
+description = "Image SKU"
+
+[[types.fields]]
+name = "version"
+type = "string"
+description = "Image version"
+
+[[types.fields]]
+name = "exactVersion"
+type = "string"
+description = "Exact image version in use"
+
+# --- OsDisk ---
+[[types]]
+name = "OsDisk"
+description = "OS disk settings."
+
+[[types.fields]]
+name = "osType"
+type = "string"
+description = "Operating system type (Windows or Linux)"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Disk name"
+
+[[types.fields]]
+name = "createOption"
+type = "string"
+required = true
+description = "How the disk was created (FromImage, Attach, Empty)"
+
+[[types.fields]]
+name = "caching"
+type = "string"
+description = "Host caching mode (None, ReadOnly, ReadWrite)"
+
+[[types.fields]]
+name = "diskSizeGB"
+type = "integer"
+serde_rename = "diskSizeGB"
+description = "Disk size in GB"
+
+[[types.fields]]
+name = "managedDisk"
+rust_type = "ManagedDiskParameters"
+description = "Managed disk parameters"
+
+[[types.fields]]
+name = "deleteOption"
+type = "string"
+description = "Delete option on VM delete (Delete, Detach)"
+
+# --- DataDisk ---
+[[types]]
+name = "DataDisk"
+description = "A data disk attached to a VM."
+
+[[types.fields]]
+name = "lun"
+type = "integer"
+required = true
+description = "Logical unit number"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Disk name"
+
+[[types.fields]]
+name = "createOption"
+type = "string"
+required = true
+description = "How the disk was created"
+
+[[types.fields]]
+name = "caching"
+type = "string"
+description = "Host caching mode"
+
+[[types.fields]]
+name = "diskSizeGB"
+type = "integer"
+serde_rename = "diskSizeGB"
+description = "Disk size in GB"
+
+[[types.fields]]
+name = "managedDisk"
+rust_type = "ManagedDiskParameters"
+description = "Managed disk parameters"
+
+[[types.fields]]
+name = "deleteOption"
+type = "string"
+description = "Delete option on VM delete"
+
+# --- ManagedDiskParameters ---
+[[types]]
+name = "ManagedDiskParameters"
+description = "Managed disk parameters."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID of the managed disk"
+
+[[types.fields]]
+name = "storageAccountType"
+type = "string"
+description = "Storage account type (Standard_LRS, Premium_LRS, etc.)"
+
+# --- OsProfile ---
+[[types]]
+name = "OsProfile"
+description = "OS profile for a VM."
+
+[[types.fields]]
+name = "computerName"
+type = "string"
+description = "Computer host name"
+
+[[types.fields]]
+name = "adminUsername"
+type = "string"
+description = "Admin username"
+
+[[types.fields]]
+name = "adminPassword"
+type = "string"
+description = "Admin password (write-only)"
+
+[[types.fields]]
+name = "linuxConfiguration"
+rust_type = "LinuxConfiguration"
+description = "Linux-specific configuration"
+
+[[types.fields]]
+name = "windowsConfiguration"
+rust_type = "WindowsConfiguration"
+description = "Windows-specific configuration"
+
+# --- LinuxConfiguration ---
+[[types]]
+name = "LinuxConfiguration"
+description = "Linux-specific OS configuration."
+
+[[types.fields]]
+name = "disablePasswordAuthentication"
+type = "boolean"
+description = "Disable password auth (use SSH keys)"
+
+[[types.fields]]
+name = "provisionVMAgent"
+type = "boolean"
+serde_rename = "provisionVMAgent"
+description = "Whether to provision the VM agent"
+
+[[types.fields]]
+name = "ssh"
+rust_type = "SshConfiguration"
+description = "SSH configuration"
+
+# --- WindowsConfiguration ---
+[[types]]
+name = "WindowsConfiguration"
+description = "Windows-specific OS configuration."
+
+[[types.fields]]
+name = "provisionVMAgent"
+type = "boolean"
+serde_rename = "provisionVMAgent"
+description = "Whether to provision the VM agent"
+
+[[types.fields]]
+name = "enableAutomaticUpdates"
+type = "boolean"
+description = "Enable automatic Windows updates"
+
+# --- SshConfiguration ---
+[[types]]
+name = "SshConfiguration"
+description = "SSH configuration."
+
+[[types.fields]]
+name = "publicKeys"
+rust_type = "Vec<SshPublicKey>"
+description = "SSH public keys"
+
+# --- SshPublicKey ---
+[[types]]
+name = "SshPublicKey"
+description = "SSH public key for Linux VMs."
+
+[[types.fields]]
+name = "path"
+type = "string"
+description = "Path where the key is placed (e.g. /home/user/.ssh/authorized_keys)"
+
+[[types.fields]]
+name = "keyData"
+type = "string"
+description = "SSH public key data"
+
+# --- NetworkProfile ---
+[[types]]
+name = "NetworkProfile"
+description = "Network profile for a VM."
+
+[[types.fields]]
+name = "networkInterfaces"
+rust_type = "Vec<NetworkInterfaceReference>"
+description = "Network interfaces attached to the VM"
+
+# --- NetworkInterfaceReference ---
+[[types]]
+name = "NetworkInterfaceReference"
+description = "Reference to a network interface."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID of the NIC"
+
+[[types.fields]]
+name = "properties"
+rust_type = "NetworkInterfaceReferenceProperties"
+description = "NIC reference properties"
+
+# --- NetworkInterfaceReferenceProperties ---
+[[types]]
+name = "NetworkInterfaceReferenceProperties"
+description = "Properties of a NIC reference."
+
+[[types.fields]]
+name = "primary"
+type = "boolean"
+description = "Whether this is the primary NIC"
+
+[[types.fields]]
+name = "deleteOption"
+type = "string"
+description = "Delete option on VM delete"
+
+# --- DiagnosticsProfile ---
+[[types]]
+name = "DiagnosticsProfile"
+description = "Diagnostics profile."
+
+[[types.fields]]
+name = "bootDiagnostics"
+rust_type = "BootDiagnostics"
+description = "Boot diagnostics settings"
+
+# --- BootDiagnostics ---
+[[types]]
+name = "BootDiagnostics"
+description = "Boot diagnostics configuration."
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+description = "Whether boot diagnostics is enabled"
+
+[[types.fields]]
+name = "storageUri"
+type = "string"
+description = "Storage account URI for boot diagnostics"
+
+# --- VirtualMachineInstanceView ---
+[[types]]
+name = "VirtualMachineInstanceView"
+description = "Instance view of a virtual machine."
+
+[[types.fields]]
+name = "platformUpdateDomain"
+type = "integer"
+description = "Update domain"
+
+[[types.fields]]
+name = "platformFaultDomain"
+type = "integer"
+description = "Fault domain"
+
+[[types.fields]]
+name = "computerName"
+type = "string"
+description = "Computer name"
+
+[[types.fields]]
+name = "osName"
+type = "string"
+description = "Operating system name"
+
+[[types.fields]]
+name = "osVersion"
+type = "string"
+description = "Operating system version"
+
+[[types.fields]]
+name = "vmAgent"
+rust_type = "VirtualMachineAgentInstanceView"
+description = "VM agent instance view"
+
+[[types.fields]]
+name = "statuses"
+rust_type = "Vec<InstanceViewStatus>"
+description = "Resource status information"
+
+# --- VirtualMachineAgentInstanceView ---
+[[types]]
+name = "VirtualMachineAgentInstanceView"
+description = "Instance view of the VM agent."
+
+[[types.fields]]
+name = "vmAgentVersion"
+type = "string"
+description = "VM agent version"
+
+[[types.fields]]
+name = "statuses"
+rust_type = "Vec<InstanceViewStatus>"
+description = "Agent status information"
+
+# --- InstanceViewStatus ---
+[[types]]
+name = "InstanceViewStatus"
+description = "Instance view status."
+
+[[types.fields]]
+name = "code"
+type = "string"
+description = "Status code"
+
+[[types.fields]]
+name = "level"
+type = "string"
+description = "Level (Info, Warning, Error)"
+
+[[types.fields]]
+name = "displayStatus"
+type = "string"
+description = "Display status text"
+
+[[types.fields]]
+name = "message"
+type = "string"
+description = "Detailed status message"
+
+[[types.fields]]
+name = "time"
+type = "string"
+description = "Status time"
+
+# --- List response wrapper ---
+[[types]]
+name = "VirtualMachineListResult"
+description = "Response for listing virtual machines."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<VirtualMachine>"
+required = true
+description = "List of virtual machines"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "URL to get the next page of results"
+
+# --- Create/Update request body ---
+[[types]]
+name = "VirtualMachineCreateRequest"
+description = "Request body for creating or updating a virtual machine."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "zones"
+rust_type = "Vec<String>"
+description = "Availability zones"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineProperties"
+description = "VM properties"
+
+# --- GetInstanceView response ---
+[[types]]
+name = "VirtualMachineInstanceViewResult"
+description = "Response for getting a VM instance view."
+
+[[types.fields]]
+name = "platformUpdateDomain"
+type = "integer"
+description = "Update domain"
+
+[[types.fields]]
+name = "platformFaultDomain"
+type = "integer"
+description = "Fault domain"
+
+[[types.fields]]
+name = "computerName"
+type = "string"
+description = "Computer name"
+
+[[types.fields]]
+name = "osName"
+type = "string"
+description = "Operating system name"
+
+[[types.fields]]
+name = "osVersion"
+type = "string"
+description = "Operating system version"
+
+[[types.fields]]
+name = "vmAgent"
+rust_type = "VirtualMachineAgentInstanceView"
+description = "VM agent instance view"
+
+[[types.fields]]
+name = "statuses"
+rust_type = "Vec<InstanceViewStatus>"
+description = "Resource status information"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListVMs"
+rust_name = "list_vms"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines"
+response_type = "VirtualMachineListResult"
+description = "List virtual machines in a resource group."
+
+[[operations]]
+name = "GetVM"
+rust_name = "get_vm"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}"
+response_type = "VirtualMachine"
+description = "Get a virtual machine."
+
+[[operations.query_params]]
+name = "$expand"
+rust_name = "expand"
+description = "Expand expression (e.g. instanceView)"
+
+[[operations]]
+name = "CreateVM"
+rust_name = "create_vm"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}"
+request_body_type = "VirtualMachineCreateRequest"
+response_type = "VirtualMachine"
+description = "Create or update a virtual machine."
+
+[[operations]]
+name = "DeleteVM"
+rust_name = "delete_vm"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}"
+description = "Delete a virtual machine."
+
+[[operations]]
+name = "StartVM"
+rust_name = "start_vm"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/start"
+description = "Start a virtual machine."
+
+[[operations]]
+name = "StopVM"
+rust_name = "stop_vm"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/powerOff"
+description = "Power off (stop) a virtual machine. The VM continues to be billed."
+
+[[operations]]
+name = "DeallocateVM"
+rust_name = "deallocate_vm"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/deallocate"
+description = "Deallocate a virtual machine. Stops billing."
+
+[[operations]]
+name = "RestartVM"
+rust_name = "restart_vm"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/restart"
+description = "Restart a virtual machine."
+
+[[operations]]
+name = "GetInstanceView"
+rust_name = "get_instance_view"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/instanceView"
+response_type = "VirtualMachineInstanceViewResult"
+description = "Get the instance view of a virtual machine."
+
+# ============================================================================
+# VMSS Types
+# ============================================================================
+
+# --- Sku (used by VMSS for VM size + capacity) ---
+[[types]]
+name = "Sku"
+description = "Describes a virtual machine scale set sku."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The sku name (e.g. Standard_D2s_v3)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "The sku tier (Standard, Basic)"
+
+[[types.fields]]
+name = "capacity"
+type = "int64"
+description = "Number of instances in the scale set"
+
+# --- UpgradePolicy ---
+[[types]]
+name = "UpgradePolicy"
+description = "Describes an upgrade policy."
+
+[[types.fields]]
+name = "mode"
+type = "string"
+description = "Upgrade mode: Manual, Rolling, or Automatic"
+
+# --- VirtualMachineScaleSetVMProfile ---
+[[types]]
+name = "VirtualMachineScaleSetVMProfile"
+description = "Describes a virtual machine scale set VM profile."
+
+[[types.fields]]
+name = "osProfile"
+rust_type = "VirtualMachineScaleSetOsProfile"
+description = "OS profile for VMSS VMs"
+
+[[types.fields]]
+name = "storageProfile"
+rust_type = "StorageProfile"
+description = "Storage profile (reuses VM StorageProfile)"
+
+[[types.fields]]
+name = "networkProfile"
+rust_type = "VirtualMachineScaleSetNetworkProfile"
+description = "Network profile for VMSS VMs"
+
+# --- VirtualMachineScaleSetOsProfile ---
+[[types]]
+name = "VirtualMachineScaleSetOsProfile"
+description = "OS profile for VMSS VMs."
+
+[[types.fields]]
+name = "computerNamePrefix"
+type = "string"
+description = "Computer name prefix for VM instances"
+
+[[types.fields]]
+name = "adminUsername"
+type = "string"
+description = "Admin username"
+
+[[types.fields]]
+name = "adminPassword"
+type = "string"
+description = "Admin password (write-only)"
+
+[[types.fields]]
+name = "linuxConfiguration"
+rust_type = "LinuxConfiguration"
+description = "Linux-specific configuration"
+
+[[types.fields]]
+name = "windowsConfiguration"
+rust_type = "WindowsConfiguration"
+description = "Windows-specific configuration"
+
+# --- VirtualMachineScaleSetNetworkProfile ---
+[[types]]
+name = "VirtualMachineScaleSetNetworkProfile"
+description = "Network profile for a VMSS."
+
+[[types.fields]]
+name = "networkInterfaceConfigurations"
+rust_type = "Vec<VirtualMachineScaleSetNetworkConfiguration>"
+description = "Network interface configurations"
+
+# --- VirtualMachineScaleSetNetworkConfiguration ---
+[[types]]
+name = "VirtualMachineScaleSetNetworkConfiguration"
+description = "Network configuration for VMSS instances."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "Network configuration name"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineScaleSetNetworkConfigurationProperties"
+description = "Network configuration properties"
+
+# --- VirtualMachineScaleSetNetworkConfigurationProperties ---
+[[types]]
+name = "VirtualMachineScaleSetNetworkConfigurationProperties"
+description = "Properties of a VMSS network configuration."
+
+[[types.fields]]
+name = "primary"
+type = "boolean"
+description = "Whether this is the primary NIC"
+
+[[types.fields]]
+name = "enableIPForwarding"
+type = "boolean"
+serde_rename = "enableIPForwarding"
+description = "Whether IP forwarding is enabled"
+
+[[types.fields]]
+name = "ipConfigurations"
+rust_type = "Vec<VirtualMachineScaleSetIPConfiguration>"
+description = "IP configurations"
+
+# --- VirtualMachineScaleSetIPConfiguration ---
+[[types]]
+name = "VirtualMachineScaleSetIPConfiguration"
+description = "IP configuration for a VMSS NIC."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "IP configuration name"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineScaleSetIPConfigurationProperties"
+description = "IP configuration properties"
+
+# --- VirtualMachineScaleSetIPConfigurationProperties ---
+[[types]]
+name = "VirtualMachineScaleSetIPConfigurationProperties"
+description = "Properties of a VMSS IP configuration."
+
+[[types.fields]]
+name = "subnet"
+rust_type = "SubResource"
+description = "Subnet reference"
+
+# --- SubResource (generic ARM sub-resource reference) ---
+[[types]]
+name = "SubResource"
+description = "Generic ARM sub-resource reference with ID."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+# --- VirtualMachineScaleSetProperties ---
+[[types]]
+name = "VirtualMachineScaleSetProperties"
+description = "Properties of a virtual machine scale set."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state"
+
+[[types.fields]]
+name = "uniqueId"
+type = "string"
+description = "Unique ID of the scale set"
+
+[[types.fields]]
+name = "overprovision"
+type = "boolean"
+description = "Whether to overprovision VMs during scaling"
+
+[[types.fields]]
+name = "singlePlacementGroup"
+type = "boolean"
+description = "Limits to single placement group (max 100 VMs)"
+
+[[types.fields]]
+name = "platformFaultDomainCount"
+type = "integer"
+description = "Fault domain count per placement group"
+
+[[types.fields]]
+name = "upgradePolicy"
+rust_type = "UpgradePolicy"
+description = "Upgrade policy configuration"
+
+[[types.fields]]
+name = "virtualMachineProfile"
+rust_type = "VirtualMachineScaleSetVMProfile"
+description = "VM profile template for instances"
+
+# --- VirtualMachineScaleSet (top-level resource) ---
+[[types]]
+name = "VirtualMachineScaleSet"
+description = "An Azure virtual machine scale set resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "Sku"
+description = "VMSS SKU (VM size + capacity)"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineScaleSetProperties"
+description = "VMSS properties"
+
+# --- VirtualMachineScaleSetListResult ---
+[[types]]
+name = "VirtualMachineScaleSetListResult"
+description = "Response for listing virtual machine scale sets."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<VirtualMachineScaleSet>"
+required = true
+description = "List of virtual machine scale sets"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "URL to get the next page of results"
+
+# --- VirtualMachineScaleSetCreateRequest ---
+[[types]]
+name = "VirtualMachineScaleSetCreateRequest"
+description = "Request body for creating or updating a virtual machine scale set."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "Sku"
+description = "VMSS SKU (VM size + capacity)"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineScaleSetProperties"
+description = "VMSS properties"
+
+# --- VirtualMachineScaleSetVM (instance in a VMSS) ---
+[[types]]
+name = "VirtualMachineScaleSetVM"
+description = "A virtual machine in a VM scale set."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "instanceId"
+type = "string"
+description = "Instance ID within the scale set"
+
+[[types.fields]]
+name = "sku"
+rust_type = "Sku"
+description = "VM SKU information"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VirtualMachineScaleSetVMProperties"
+description = "VMSS VM properties"
+
+# --- VirtualMachineScaleSetVMProperties ---
+[[types]]
+name = "VirtualMachineScaleSetVMProperties"
+description = "Properties of a VMSS VM instance."
+
+[[types.fields]]
+name = "latestModelApplied"
+type = "boolean"
+description = "Whether the latest VMSS model is applied"
+
+[[types.fields]]
+name = "vmId"
+type = "string"
+description = "Unique VM identifier"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state"
+
+[[types.fields]]
+name = "hardwareProfile"
+rust_type = "HardwareProfile"
+description = "Hardware profile (VM size)"
+
+[[types.fields]]
+name = "storageProfile"
+rust_type = "StorageProfile"
+description = "Storage profile"
+
+[[types.fields]]
+name = "osProfile"
+rust_type = "OsProfile"
+description = "OS profile"
+
+[[types.fields]]
+name = "networkProfile"
+rust_type = "NetworkProfile"
+description = "Network profile"
+
+# --- VirtualMachineScaleSetVMListResult ---
+[[types]]
+name = "VirtualMachineScaleSetVMListResult"
+description = "Response for listing VMSS VM instances."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<VirtualMachineScaleSetVM>"
+required = true
+description = "List of VMSS VM instances"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "URL to get the next page of results"
+
+# --- VirtualMachineScaleSetVMInstanceIDs (for start/stop/deallocate) ---
+[[types]]
+name = "VirtualMachineScaleSetVMInstanceIDs"
+description = "Instance IDs for VMSS instance operations."
+
+[[types.fields]]
+name = "instanceIds"
+rust_type = "Vec<String>"
+description = "VM instance IDs (omit to target all instances)"
+
+# ============================================================================
+# VMSS Operations
+# ============================================================================
+
+[[operations]]
+name = "ListVMSS"
+rust_name = "list_vmss"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets"
+response_type = "VirtualMachineScaleSetListResult"
+description = "List virtual machine scale sets in a resource group."
+
+[[operations]]
+name = "GetVMSS"
+rust_name = "get_vmss"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}"
+response_type = "VirtualMachineScaleSet"
+description = "Get a virtual machine scale set."
+
+[[operations]]
+name = "CreateVMSS"
+rust_name = "create_vmss"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}"
+request_body_type = "VirtualMachineScaleSetCreateRequest"
+response_type = "VirtualMachineScaleSet"
+description = "Create or update a virtual machine scale set."
+
+[[operations]]
+name = "DeleteVMSS"
+rust_name = "delete_vmss"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}"
+description = "Delete a virtual machine scale set."
+
+[[operations]]
+name = "ListVMSSInstances"
+rust_name = "list_vmss_instances"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines"
+response_type = "VirtualMachineScaleSetVMListResult"
+description = "List virtual machines in a VM scale set."
+
+[[operations]]
+name = "StartVMSSInstances"
+rust_name = "start_vmss_instances"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/start"
+request_body_type = "VirtualMachineScaleSetVMInstanceIDs"
+description = "Start one or more virtual machines in a VM scale set."
+
+[[operations]]
+name = "StopVMSSInstances"
+rust_name = "stop_vmss_instances"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/poweroff"
+request_body_type = "VirtualMachineScaleSetVMInstanceIDs"
+description = "Power off one or more virtual machines in a VM scale set."
+
+# ============================================================================
+# Managed Disk Types
+# ============================================================================
+
+# --- DiskSku ---
+[[types]]
+name = "DiskSku"
+description = "The disks sku name."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The sku name (Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS, Premium_ZRS, StandardSSD_ZRS, PremiumV2_LRS)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "The sku tier"
+
+# --- DiskCreationData ---
+[[types]]
+name = "DiskCreationData"
+description = "Data used when creating a disk."
+
+[[types.fields]]
+name = "createOption"
+type = "string"
+required = true
+description = "Disk source type: Empty, Copy, Import, Restore, FromImage, etc."
+
+[[types.fields]]
+name = "storageAccountId"
+type = "string"
+description = "Storage account ID (required for Import)"
+
+[[types.fields]]
+name = "sourceUri"
+type = "string"
+description = "URI of source VHD (for Import)"
+
+[[types.fields]]
+name = "sourceResourceId"
+type = "string"
+description = "ARM ID of source snapshot or disk (for Copy)"
+
+[[types.fields]]
+name = "imageReference"
+rust_type = "ImageDiskReference"
+description = "Disk image reference (for FromImage)"
+
+[[types.fields]]
+name = "galleryImageReference"
+rust_type = "ImageDiskReference"
+description = "Gallery image reference (for FromImage)"
+
+# --- ImageDiskReference ---
+[[types]]
+name = "ImageDiskReference"
+description = "The source image used for creating the disk."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "ARM ID of the image or gallery image version"
+
+[[types.fields]]
+name = "lun"
+type = "integer"
+description = "If the disk is created from an image's data disk, this is an index into the data disk array"
+
+# --- DiskProperties ---
+[[types]]
+name = "DiskProperties"
+description = "Disk resource properties."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The disk provisioning state"
+
+[[types.fields]]
+name = "diskState"
+type = "string"
+description = "The state of the disk (Unattached, Attached, Reserved, Frozen, etc.)"
+
+[[types.fields]]
+name = "diskSizeGB"
+type = "integer"
+serde_rename = "diskSizeGB"
+description = "Disk size in GB"
+
+[[types.fields]]
+name = "diskSizeBytes"
+type = "int64"
+serde_rename = "diskSizeBytes"
+description = "The size of the disk in bytes"
+
+[[types.fields]]
+name = "diskIOPSReadWrite"
+type = "int64"
+serde_rename = "diskIOPSReadWrite"
+description = "The number of IOPS allowed for this disk (UltraSSD only)"
+
+[[types.fields]]
+name = "diskMBpsReadWrite"
+type = "int64"
+serde_rename = "diskMBpsReadWrite"
+description = "The bandwidth allowed for this disk in MB per second (UltraSSD only)"
+
+[[types.fields]]
+name = "osType"
+type = "string"
+description = "The operating system type (Windows or Linux)"
+
+[[types.fields]]
+name = "hyperVGeneration"
+type = "string"
+description = "The hypervisor generation of the VM (V1 or V2)"
+
+[[types.fields]]
+name = "creationData"
+rust_type = "DiskCreationData"
+description = "Disk source information"
+
+[[types.fields]]
+name = "encryptionSettingsCollection"
+rust_type = "EncryptionSettingsCollection"
+description = "Encryption settings collection for Azure Disk Encryption"
+
+[[types.fields]]
+name = "encryption"
+rust_type = "Encryption"
+description = "Encryption property to encrypt data using customer managed or platform managed keys"
+
+[[types.fields]]
+name = "networkAccessPolicy"
+type = "string"
+description = "Policy for accessing the disk via network (AllowAll, AllowPrivate, DenyAll)"
+
+[[types.fields]]
+name = "publicNetworkAccess"
+type = "string"
+description = "Policy for controlling export on the disk (Enabled, Disabled)"
+
+[[types.fields]]
+name = "timeCreated"
+type = "string"
+description = "The time when the disk was created"
+
+[[types.fields]]
+name = "uniqueId"
+type = "string"
+description = "Unique GUID identifying the resource"
+
+# --- EncryptionSettingsCollection ---
+[[types]]
+name = "EncryptionSettingsCollection"
+description = "Encryption settings for disk or snapshot."
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+required = true
+description = "Whether encryption settings are enabled"
+
+[[types.fields]]
+name = "encryptionSettings"
+rust_type = "Vec<EncryptionSettingsElement>"
+description = "A collection of encryption settings, one for each disk volume"
+
+# --- EncryptionSettingsElement ---
+[[types]]
+name = "EncryptionSettingsElement"
+description = "Encryption settings for one disk volume."
+
+[[types.fields]]
+name = "diskEncryptionKey"
+rust_type = "KeyVaultAndSecretReference"
+description = "Key Vault Secret URL and vault id of the disk encryption key"
+
+[[types.fields]]
+name = "keyEncryptionKey"
+rust_type = "KeyVaultAndKeyReference"
+description = "Key Vault Key URL and vault id of the key encryption key"
+
+# --- KeyVaultAndSecretReference ---
+[[types]]
+name = "KeyVaultAndSecretReference"
+description = "Key Vault Secret URL and vault id of the encryption key."
+
+[[types.fields]]
+name = "sourceVault"
+rust_type = "SubResource"
+required = true
+description = "Resource id of the KeyVault containing the key or secret"
+
+[[types.fields]]
+name = "secretUrl"
+type = "string"
+required = true
+description = "Url pointing to a key or secret in KeyVault"
+
+# --- KeyVaultAndKeyReference ---
+[[types]]
+name = "KeyVaultAndKeyReference"
+description = "Key Vault Key URL and vault id of the encryption key."
+
+[[types.fields]]
+name = "sourceVault"
+rust_type = "SubResource"
+required = true
+description = "Resource id of the KeyVault containing the key or secret"
+
+[[types.fields]]
+name = "keyUrl"
+type = "string"
+required = true
+description = "Url pointing to a key or secret in KeyVault"
+
+# --- Encryption ---
+[[types]]
+name = "Encryption"
+description = "Encryption at rest settings for disk or snapshot."
+
+[[types.fields]]
+name = "diskEncryptionSetId"
+type = "string"
+description = "ResourceId of the disk encryption set to use for enabling encryption at rest"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of key used to encrypt the data of the disk (EncryptionAtRestWithPlatformKey, EncryptionAtRestWithCustomerKey, etc.)"
+
+# --- Disk (top-level resource) ---
+[[types]]
+name = "Disk"
+description = "Disk resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "zones"
+rust_type = "Vec<String>"
+description = "The logical zone list for Disk"
+
+[[types.fields]]
+name = "sku"
+rust_type = "DiskSku"
+description = "The disks sku name"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DiskProperties"
+description = "Disk resource properties"
+
+# --- DiskListResult ---
+[[types]]
+name = "DiskListResult"
+description = "The List Disks operation response."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Disk>"
+required = true
+description = "A list of disks"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The uri to fetch the next page of disks"
+
+# --- DiskCreateRequest ---
+[[types]]
+name = "DiskCreateRequest"
+description = "Request body for creating or updating a disk."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "zones"
+rust_type = "Vec<String>"
+description = "The logical zone list for Disk"
+
+[[types.fields]]
+name = "sku"
+rust_type = "DiskSku"
+description = "The disks sku name"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DiskProperties"
+description = "Disk resource properties"
+
+# --- DiskUpdateRequest ---
+[[types]]
+name = "DiskUpdateRequest"
+description = "Request body for updating a disk (PATCH)."
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "DiskSku"
+description = "The disk SKU (name and tier)"
+
+# --- GrantAccessData (for GrantAccess operation) ---
+[[types]]
+name = "GrantAccessData"
+description = "Data used for requesting a SAS URI for a managed disk or snapshot."
+
+[[types.fields]]
+name = "access"
+type = "string"
+required = true
+description = "The Access Level (None, Read, Write)"
+
+[[types.fields]]
+name = "durationInSeconds"
+type = "integer"
+required = true
+description = "Time duration in seconds until the SAS access expires"
+
+[[types.fields]]
+name = "fileFormat"
+type = "string"
+description = "Used to specify the file format when downloading a VHD snapshot (VHDX or VHD)"
+
+# --- AccessUri (response from GrantAccess) ---
+[[types]]
+name = "AccessUri"
+description = "A disk access SAS uri."
+
+[[types.fields]]
+name = "accessSAS"
+type = "string"
+serde_rename = "accessSAS"
+description = "A SAS uri for accessing a disk"
+
+[[types.fields]]
+name = "securityDataAccessSAS"
+type = "string"
+serde_rename = "securityDataAccessSAS"
+description = "A SAS uri for accessing a VM guest state"
+
+# ============================================================================
+# Managed Disk Operations
+# ============================================================================
+
+[[operations]]
+name = "ListDisks"
+rust_name = "list_disks"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks"
+response_type = "DiskListResult"
+description = "Lists all the disks under a resource group."
+
+[[operations]]
+name = "ListDisksInSubscription"
+rust_name = "list_disks_in_subscription"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Compute/disks"
+response_type = "DiskListResult"
+description = "Lists all the disks under a subscription."
+
+[[operations]]
+name = "GetDisk"
+rust_name = "get_disk"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}"
+response_type = "Disk"
+description = "Gets information about a disk."
+
+[[operations]]
+name = "CreateDisk"
+rust_name = "create_disk"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}"
+request_body_type = "DiskCreateRequest"
+response_type = "Disk"
+description = "Creates or updates a disk."
+
+[[operations]]
+name = "DeleteDisk"
+rust_name = "delete_disk"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}"
+description = "Deletes a disk."
+
+[[operations]]
+name = "UpdateDisk"
+rust_name = "update_disk"
+method = "PATCH"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}"
+request_body_type = "DiskUpdateRequest"
+response_type = "Disk"
+description = "Updates (patches) a disk."
+
+[[operations]]
+name = "DeleteSnapshot"
+rust_name = "delete_snapshot"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/snapshots/{snapshotName}"
+description = "Deletes a snapshot."
+
+[[operations]]
+name = "GrantAccess"
+rust_name = "grant_access"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}/beginGetAccess"
+request_body_type = "GrantAccessData"
+response_type = "AccessUri"
+description = "Grants access to a disk."
+
+[[operations]]
+name = "RevokeAccess"
+rust_name = "revoke_access"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/disks/{diskName}/endGetAccess"
+description = "Revokes access to a disk."

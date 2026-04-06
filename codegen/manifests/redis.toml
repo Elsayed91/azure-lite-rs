@@ -1,0 +1,383 @@
+# Azure Redis Cache API manifest
+# ARM REST API version: 2023-08-01
+# Source: https://learn.microsoft.com/en-us/rest/api/redis/
+
+[api]
+name = "redis"
+display_name = "Azure Redis Cache"
+version = "v1"
+api_version = "2023-08-01"
+service_name = "redis"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/redis/"
+
+[api.client]
+accessor_name = "redis"
+client_struct = "RedisClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- RedisSku ---
+[[types]]
+name = "RedisSku"
+description = "SKU parameters supplied to the create Redis operation."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The type of Redis cache to deploy (Basic, Standard, Premium)"
+
+[[types.fields]]
+name = "family"
+type = "string"
+required = true
+description = "The SKU family to use (C for Basic/Standard, P for Premium)"
+
+[[types.fields]]
+name = "capacity"
+type = "integer"
+required = true
+description = "The size of the Redis cache to deploy (0-6 for C family, 1-5 for P family)"
+
+# --- RedisCommonPropertiesRedisConfiguration ---
+[[types]]
+name = "RedisConfiguration"
+description = "All Redis Settings. Few possible keys: rdb-backup-enabled, rdb-storage-connection-string, etc."
+
+[[types.fields]]
+name = "maxmemoryPolicy"
+type = "string"
+description = "How Redis will select what to remove when maxmemory is reached"
+
+[[types.fields]]
+name = "maxmemoryReserved"
+type = "string"
+description = "Value in megabytes reserved for non-cache usage"
+
+# --- RedisProperties ---
+[[types]]
+name = "RedisProperties"
+description = "Properties of the redis cache."
+
+[[types.fields]]
+name = "sku"
+rust_type = "RedisSku"
+description = "The SKU of the Redis cache to deploy"
+
+[[types.fields]]
+name = "hostName"
+type = "string"
+description = "Redis host name"
+
+[[types.fields]]
+name = "port"
+type = "integer"
+description = "Redis non-SSL port"
+
+[[types.fields]]
+name = "sslPort"
+type = "integer"
+description = "Redis SSL port"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Redis instance provisioning status"
+
+[[types.fields]]
+name = "enableNonSslPort"
+type = "boolean"
+description = "Specifies whether the non-ssl Redis server port (6379) is enabled"
+
+[[types.fields]]
+name = "redisVersion"
+type = "string"
+description = "Redis version"
+
+[[types.fields]]
+name = "redisConfiguration"
+rust_type = "RedisConfiguration"
+description = "All Redis Settings"
+
+# --- RedisResource ---
+[[types]]
+name = "RedisResource"
+description = "A single Redis item in List or Get Operation."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The geo-location where the resource lives"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RedisProperties"
+description = "Redis cache properties"
+
+# --- RedisListResult ---
+[[types]]
+name = "RedisListResult"
+description = "The response of list Redis operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<RedisResource>"
+description = "List of Redis cache instances"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to retrieve next page"
+
+# --- RedisCreateProperties ---
+[[types]]
+name = "RedisCreateProperties"
+description = "Properties supplied to Create Redis operation."
+
+[[types.fields]]
+name = "sku"
+rust_type = "RedisSku"
+required = true
+description = "The SKU of the Redis cache to deploy"
+
+[[types.fields]]
+name = "enableNonSslPort"
+type = "boolean"
+description = "Specifies whether the non-ssl Redis server port (6379) is enabled"
+
+[[types.fields]]
+name = "redisVersion"
+type = "string"
+description = "Redis version. Only major version will be used in PUT/PATCH request with current valid values: (4, 6)"
+
+[[types.fields]]
+name = "redisConfiguration"
+rust_type = "RedisConfiguration"
+description = "All Redis Settings"
+
+[[types.fields]]
+name = "minimumTlsVersion"
+type = "string"
+description = "Optional: requires clients to use a specified TLS version (or higher)"
+
+# --- RedisCreateRequest ---
+[[types]]
+name = "RedisCreateRequest"
+description = "Parameters supplied to the Create Redis operation."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "The geo-location where the resource lives"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RedisCreateProperties"
+required = true
+description = "Redis cache properties"
+
+# --- RedisAccessKeys ---
+[[types]]
+name = "RedisAccessKeys"
+description = "Redis cache access keys."
+
+[[types.fields]]
+name = "primaryKey"
+type = "string"
+description = "The current primary key that clients can use to authenticate with Redis cache"
+
+[[types.fields]]
+name = "secondaryKey"
+type = "string"
+description = "The current secondary key that clients can use to authenticate with Redis cache"
+
+# --- RedisRegenerateKeyParameters ---
+[[types]]
+name = "RedisRegenerateKeyParameters"
+description = "Specifies which Redis access keys to reset."
+
+[[types.fields]]
+name = "keyType"
+type = "string"
+required = true
+description = "The Redis access key to regenerate (Primary or Secondary)"
+
+# --- RedisRebootParameters ---
+[[types]]
+name = "RedisRebootParameters"
+description = "Specifies which Redis node(s) to reboot."
+
+[[types.fields]]
+name = "rebootType"
+type = "string"
+required = true
+description = "Which Redis node(s) to reboot (PrimaryNode, SecondaryNode, AllNodes)"
+
+[[types.fields]]
+name = "shardId"
+type = "integer"
+description = "If clustering is enabled, the ID of the shard to be rebooted"
+
+# --- RedisForceRebootResponse ---
+[[types]]
+name = "RedisForceRebootResponse"
+description = "Response to force reboot for Redis cache."
+
+[[types.fields]]
+name = "message"
+type = "string"
+description = "Status message"
+
+# --- ExportRDBParameters ---
+[[types]]
+name = "ExportRDBParameters"
+description = "Parameters for Redis export operation."
+
+[[types.fields]]
+name = "prefix"
+type = "string"
+description = "Prefix to use for exported files"
+
+[[types.fields]]
+name = "container"
+type = "string"
+required = true
+description = "Container name to export to"
+
+[[types.fields]]
+name = "format"
+type = "string"
+description = "File format (RDB is the only supported value)"
+
+# --- ImportRDBParameters ---
+[[types]]
+name = "ImportRDBParameters"
+description = "Parameters for Redis import operation."
+
+[[types.fields]]
+name = "format"
+type = "string"
+description = "File format (RDB is the only supported value)"
+
+[[types.fields]]
+name = "fileUris"
+rust_type = "Vec<String>"
+required = true
+description = "files to import"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListCaches"
+rust_name = "list_caches"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Cache/redis"
+response_type = "RedisListResult"
+description = "Gets all Redis caches in the specified subscription."
+
+[[operations]]
+name = "ListCachesByResourceGroup"
+rust_name = "list_caches_by_resource_group"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis"
+response_type = "RedisListResult"
+description = "Lists all Redis caches in a resource group."
+
+[[operations]]
+name = "GetCache"
+rust_name = "get_cache"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}"
+response_type = "RedisResource"
+description = "Gets a Redis cache (resource description)."
+
+[[operations]]
+name = "CreateCache"
+rust_name = "create_cache"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}"
+request_body_type = "RedisCreateRequest"
+response_type = "RedisResource"
+description = "Create or replace (overwrite/recreate, with potential downtime) an existing Redis cache."
+
+[[operations]]
+name = "DeleteCache"
+rust_name = "delete_cache"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}"
+description = "Deletes a Redis cache."
+
+[[operations]]
+name = "ListKeys"
+rust_name = "list_keys"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}/listKeys"
+response_type = "RedisAccessKeys"
+description = "Retrieve a Redis cache's access keys."
+
+[[operations]]
+name = "RegenerateKey"
+rust_name = "regenerate_key"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}/regenerateKey"
+request_body_type = "RedisRegenerateKeyParameters"
+response_type = "RedisAccessKeys"
+description = "Regenerate Redis cache's access keys."
+
+[[operations]]
+name = "ForceReboot"
+rust_name = "force_reboot"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}/forceReboot"
+request_body_type = "RedisRebootParameters"
+response_type = "RedisForceRebootResponse"
+description = "Reboot specified Redis node(s)."
+
+[[operations]]
+name = "ImportData"
+rust_name = "import_data"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}/import"
+request_body_type = "ImportRDBParameters"
+description = "Import data into Redis cache."
+
+[[operations]]
+name = "ExportData"
+rust_name = "export_data"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cache/redis/{name}/export"
+request_body_type = "ExportRDBParameters"
+description = "Export data from the redis cache to blobs in a container."

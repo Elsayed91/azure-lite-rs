@@ -1,0 +1,532 @@
+# Azure CosmosDB API manifest
+# ARM REST API version: 2024-02-15-preview
+# Source: https://learn.microsoft.com/en-us/rest/api/cosmos-db-resource-provider/
+
+[api]
+name = "cosmosdb"
+display_name = "Azure CosmosDB"
+version = "v1"
+api_version = "2024-02-15-preview"
+service_name = "cosmosdb"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/cosmos-db-resource-provider/"
+
+[api.client]
+accessor_name = "cosmosdb"
+client_struct = "CosmosDbClient"
+
+# ============================================================================
+# Account Types
+# ============================================================================
+
+# --- ConsistencyPolicy ---
+[[types]]
+name = "ConsistencyPolicy"
+description = "The consistency policy for the Cosmos DB account."
+
+[[types.fields]]
+name = "defaultConsistencyLevel"
+type = "string"
+required = true
+description = "The default consistency level (BoundedStaleness, ConsistentPrefix, Eventual, Session, Strong)"
+
+[[types.fields]]
+name = "maxStalenessPrefix"
+type = "int64"
+description = "When used with BoundedStaleness, represents the number of stale requests tolerated"
+
+[[types.fields]]
+name = "maxIntervalInSeconds"
+type = "integer"
+description = "When used with BoundedStaleness, represents the time (seconds) of staleness tolerated"
+
+# --- Location ---
+[[types]]
+name = "Location"
+description = "A region in which the Azure Cosmos DB database account is deployed."
+
+[[types.fields]]
+name = "locationName"
+type = "string"
+description = "The name of the region"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The status of the Cosmos DB account at the time the operation was called"
+
+[[types.fields]]
+name = "failoverPriority"
+type = "integer"
+description = "The failover priority of the region (0 = write region)"
+
+[[types.fields]]
+name = "isZoneRedundant"
+type = "boolean"
+description = "Flag to indicate whether or not this region is an AvailabilityZone region"
+
+# --- DatabaseAccountProperties ---
+[[types]]
+name = "DatabaseAccountProperties"
+description = "Properties for the database account."
+
+[[types.fields]]
+name = "documentEndpoint"
+type = "string"
+description = "The connection endpoint for the Cosmos DB database account"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The status of the Cosmos DB account at the time the operation was called"
+
+[[types.fields]]
+name = "databaseAccountOfferType"
+type = "string"
+description = "The offer type for the Cosmos DB database account (Standard)"
+
+[[types.fields]]
+name = "consistencyPolicy"
+rust_type = "ConsistencyPolicy"
+description = "The consistency policy for the Cosmos DB account"
+
+[[types.fields]]
+name = "enableAutomaticFailover"
+type = "boolean"
+description = "Enables automatic failover of the write region"
+
+[[types.fields]]
+name = "enableMultipleWriteLocations"
+type = "boolean"
+description = "Enables the account to write in multiple locations"
+
+# --- DatabaseAccount ---
+[[types]]
+name = "DatabaseAccount"
+description = "An Azure Cosmos DB database account."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Indicates the type of database account (GlobalDocumentDB, MongoDB, Parse)"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DatabaseAccountProperties"
+description = "Account properties"
+
+# --- DatabaseAccountListResult ---
+[[types]]
+name = "DatabaseAccountListResult"
+description = "The List operation response, that contains the database accounts and their properties."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<DatabaseAccount>"
+description = "List of database account and their properties"
+
+# --- DatabaseAccountCreateUpdateProperties ---
+[[types]]
+name = "DatabaseAccountCreateUpdateProperties"
+description = "Properties to create and update Azure Cosmos DB database accounts."
+
+[[types.fields]]
+name = "databaseAccountOfferType"
+type = "string"
+required = true
+description = "The offer type for the database (Standard)"
+
+[[types.fields]]
+name = "consistencyPolicy"
+rust_type = "ConsistencyPolicy"
+description = "The consistency policy for the Cosmos DB account"
+
+[[types.fields]]
+name = "enableAutomaticFailover"
+type = "boolean"
+description = "Enables automatic failover of the write region"
+
+[[types.fields]]
+name = "enableMultipleWriteLocations"
+type = "boolean"
+description = "Enables the account to write in multiple locations"
+
+# --- DatabaseAccountCreateRequest ---
+[[types]]
+name = "DatabaseAccountCreateRequest"
+description = "Parameters to create and update Cosmos DB database accounts."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "The location of the resource group to which the resource belongs"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Indicates the type of database account (GlobalDocumentDB, MongoDB, Parse)"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DatabaseAccountCreateUpdateProperties"
+required = true
+description = "Properties for the database account"
+
+# ============================================================================
+# SQL Database Types
+# ============================================================================
+
+# --- SqlDatabaseResource ---
+[[types]]
+name = "SqlDatabaseResource"
+description = "Cosmos DB SQL database resource object."
+
+[[types.fields]]
+name = "id"
+type = "string"
+required = true
+description = "Name of the Cosmos DB SQL database"
+
+# --- SqlDatabaseGetPropertiesResource ---
+[[types]]
+name = "SqlDatabaseGetPropertiesResource"
+description = "The Cosmos DB SQL database resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Name of the Cosmos DB SQL database"
+
+[[types.fields]]
+name = "colls"
+type = "string"
+description = "A system generated property that specified the addressable path of the collections"
+
+[[types.fields]]
+name = "users"
+type = "string"
+description = "A system generated property that specifies the addressable path of the users resource"
+
+# --- SqlDatabaseGetProperties ---
+[[types]]
+name = "SqlDatabaseGetProperties"
+description = "The properties of an Azure Cosmos DB SQL database."
+
+[[types.fields]]
+name = "resource"
+rust_type = "SqlDatabaseGetPropertiesResource"
+description = "The resource of the SQL database"
+
+# --- SqlDatabaseGetResults ---
+[[types]]
+name = "SqlDatabaseGetResults"
+description = "An Azure Cosmos DB SQL database."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The unique resource identifier of the ARM resource"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the ARM resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of Azure resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The location of the resource group"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Tags are a list of key-value pairs"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SqlDatabaseGetProperties"
+description = "The properties of an Azure Cosmos DB SQL database"
+
+# --- SqlDatabaseListResult ---
+[[types]]
+name = "SqlDatabaseListResult"
+description = "The List operation response, that contains the SQL databases and their properties."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SqlDatabaseGetResults>"
+description = "List of SQL databases and their properties"
+
+# --- SqlDatabaseCreateUpdateProperties ---
+[[types]]
+name = "SqlDatabaseCreateUpdateProperties"
+description = "Properties to create and update Azure Cosmos DB SQL database."
+
+[[types.fields]]
+name = "resource"
+rust_type = "SqlDatabaseResource"
+required = true
+description = "The standard JSON format of a Cosmos DB SQL database"
+
+# --- SqlDatabaseCreateRequest ---
+[[types]]
+name = "SqlDatabaseCreateRequest"
+description = "Parameters to create and update Cosmos DB SQL database."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "The location of the resource group to which the resource belongs"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Tags are a list of key-value pairs"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SqlDatabaseCreateUpdateProperties"
+required = true
+description = "Properties to create and update Azure Cosmos DB SQL database"
+
+# ============================================================================
+# SQL Container Types
+# ============================================================================
+
+# --- ContainerPartitionKey ---
+[[types]]
+name = "ContainerPartitionKey"
+description = "The configuration of the partition key to be used for partitioning data."
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Indicates the kind of algorithm used for partitioning (Hash, Range, MultiHash)"
+
+[[types.fields]]
+name = "version"
+type = "integer"
+description = "Version of the partition key definition"
+
+# --- SqlContainerResource ---
+[[types]]
+name = "SqlContainerResource"
+description = "Cosmos DB SQL container resource object."
+
+[[types.fields]]
+name = "id"
+type = "string"
+required = true
+description = "Name of the Cosmos DB SQL container"
+
+[[types.fields]]
+name = "partitionKey"
+rust_type = "ContainerPartitionKey"
+description = "The configuration of the partition key to be used for partitioning data"
+
+# --- SqlContainerGetPropertiesResource ---
+[[types]]
+name = "SqlContainerGetPropertiesResource"
+description = "The resource of the SQL container."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Name of the Cosmos DB SQL container"
+
+[[types.fields]]
+name = "partitionKey"
+rust_type = "ContainerPartitionKey"
+description = "The configuration of the partition key"
+
+# --- SqlContainerGetProperties ---
+[[types]]
+name = "SqlContainerGetProperties"
+description = "The properties of an Azure Cosmos DB container."
+
+[[types.fields]]
+name = "resource"
+rust_type = "SqlContainerGetPropertiesResource"
+description = "The resource of the SQL container"
+
+# --- SqlContainerGetResults ---
+[[types]]
+name = "SqlContainerGetResults"
+description = "An Azure Cosmos DB container."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The unique resource identifier of the ARM resource"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the ARM resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of Azure resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The location of the resource group"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Tags are a list of key-value pairs"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SqlContainerGetProperties"
+description = "The properties of an Azure Cosmos DB container"
+
+# --- SqlContainerListResult ---
+[[types]]
+name = "SqlContainerListResult"
+description = "The List operation response, that contains the containers and their properties."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SqlContainerGetResults>"
+description = "List of containers and their properties"
+
+# --- SqlContainerCreateUpdateProperties ---
+[[types]]
+name = "SqlContainerCreateUpdateProperties"
+description = "Properties to create and update Azure Cosmos DB container."
+
+[[types.fields]]
+name = "resource"
+rust_type = "SqlContainerResource"
+required = true
+description = "The standard JSON format of a Cosmos DB SQL container"
+
+# ============================================================================
+# Account Operations
+# ============================================================================
+
+[[operations]]
+name = "ListAccounts"
+rust_name = "list_accounts"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts"
+response_type = "DatabaseAccountListResult"
+description = "Lists all the Azure Cosmos DB database accounts available under the subscription."
+
+[[operations]]
+name = "GetAccount"
+rust_name = "get_account"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}"
+response_type = "DatabaseAccount"
+description = "Retrieves the properties of an existing Azure Cosmos DB database account."
+
+[[operations]]
+name = "CreateAccount"
+rust_name = "create_account"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}"
+request_body_type = "DatabaseAccountCreateRequest"
+response_type = "DatabaseAccount"
+description = "Creates or updates an Azure Cosmos DB database account."
+
+[[operations]]
+name = "DeleteAccount"
+rust_name = "delete_account"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}"
+description = "Deletes an existing Azure Cosmos DB database account."
+
+# ============================================================================
+# SQL Database Operations
+# ============================================================================
+
+[[operations]]
+name = "ListSqlDatabases"
+rust_name = "list_sql_databases"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases"
+response_type = "SqlDatabaseListResult"
+description = "Lists the SQL databases under an existing Azure Cosmos DB database account."
+
+[[operations]]
+name = "GetSqlDatabase"
+rust_name = "get_sql_database"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}"
+response_type = "SqlDatabaseGetResults"
+description = "Gets the SQL database under an existing Azure Cosmos DB database account."
+
+[[operations]]
+name = "CreateSqlDatabase"
+rust_name = "create_sql_database"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}"
+request_body_type = "SqlDatabaseCreateRequest"
+response_type = "SqlDatabaseGetResults"
+description = "Create or update an Azure Cosmos DB SQL database."
+
+# ============================================================================
+# SQL Container Operations
+# ============================================================================
+
+[[operations]]
+name = "ListSqlContainers"
+rust_name = "list_sql_containers"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers"
+response_type = "SqlContainerListResult"
+description = "Lists the SQL container under an existing Azure Cosmos DB database account."
+
+[[operations]]
+name = "GetSqlContainer"
+rust_name = "get_sql_container"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}"
+response_type = "SqlContainerGetResults"
+description = "Gets the SQL container under an existing Azure Cosmos DB database account."

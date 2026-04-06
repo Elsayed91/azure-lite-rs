@@ -1,0 +1,109 @@
+# Azure Resource Graph API manifest
+# ARM REST API version: 2021-03-01
+# Source: https://learn.microsoft.com/en-us/rest/api/azureresourcegraph/
+
+[api]
+name = "resource_graph"
+display_name = "Azure Resource Graph"
+version = "v1"
+api_version = "2021-03-01"
+service_name = "resource_graph"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/azureresourcegraph/"
+
+[api.client]
+accessor_name = "resource_graph"
+client_struct = "ResourceGraphClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- QueryOptions ---
+[[types]]
+name = "QueryOptions"
+description = "Options for a Resource Graph query page."
+
+[[types.fields]]
+name = "top"
+type = "integer"
+serde_rename = "$top"
+description = "Maximum number of results per page (default: 1000, max: 1000)"
+
+[[types.fields]]
+name = "resultFormat"
+type = "string"
+description = "Result format: objectArray (default) or table"
+
+[[types.fields]]
+name = "skipToken"
+type = "string"
+serde_rename = "$skipToken"
+description = "Pagination token for fetching the next page of results"
+
+# --- ResourceGraphRequest ---
+[[types]]
+name = "ResourceGraphRequest"
+description = "Request body for a Resource Graph query."
+
+[[types.fields]]
+name = "subscriptions"
+rust_type = "Vec<String>"
+required = true
+description = "List of subscription IDs to query"
+
+[[types.fields]]
+name = "query"
+type = "string"
+required = true
+description = "KQL query to execute"
+
+[[types.fields]]
+name = "options"
+rust_type = "QueryOptions"
+description = "Query options (pagination, result format)"
+
+# --- ResourceGraphResponse ---
+[[types]]
+name = "ResourceGraphResponse"
+description = "Response from a Resource Graph query."
+
+[[types.fields]]
+name = "totalRecords"
+type = "int64"
+description = "Total number of records matching the query (across all pages)"
+
+[[types.fields]]
+name = "count"
+type = "int64"
+description = "Number of records returned in this page"
+
+[[types.fields]]
+name = "resultTruncated"
+type = "string"
+description = "Whether more pages are available (true or false)"
+
+[[types.fields]]
+name = "data"
+rust_type = "Vec<serde_json::Value>"
+description = "Query results as JSON objects"
+
+[[types.fields]]
+name = "skipToken"
+type = "string"
+serde_rename = "$skipToken"
+description = "Pagination token; present when resultTruncated is true"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "QueryResources"
+rust_name = "query_resources"
+method = "POST"
+url_template = "/providers/Microsoft.ResourceGraph/resources"
+request_body_type = "ResourceGraphRequest"
+response_type = "ResourceGraphResponse"
+description = "Execute a KQL query across one or more subscriptions."

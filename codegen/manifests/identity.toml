@@ -1,0 +1,227 @@
+# Azure Managed Identities API manifest
+# ARM REST API version: 2023-01-31
+# Source: https://learn.microsoft.com/en-us/rest/api/managedidentity/
+
+[api]
+name = "identity"
+display_name = "Azure Managed Identities"
+version = "v1"
+api_version = "2023-01-31"
+service_name = "identity"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/managedidentity/"
+
+[api.client]
+accessor_name = "identity"
+client_struct = "IdentityClient"
+
+# ============================================================================
+# Managed Identity Types
+# ============================================================================
+
+# --- UserAssignedIdentityProperties ---
+[[types]]
+name = "UserAssignedIdentityProperties"
+description = "The properties associated with the user assigned identity."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "The id of the tenant which the identity belongs to"
+
+[[types.fields]]
+name = "principalId"
+type = "string"
+description = "The id of the service principal object associated with the created identity"
+
+[[types.fields]]
+name = "clientId"
+type = "string"
+description = "The id of the app associated with the identity"
+
+# --- UserAssignedIdentity ---
+[[types]]
+name = "UserAssignedIdentity"
+description = "Describes an identity resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The geo-location where the resource lives"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "UserAssignedIdentityProperties"
+description = "The properties associated with the identity"
+
+# --- UserAssignedIdentityListResult ---
+[[types]]
+name = "UserAssignedIdentityListResult"
+description = "Values returned by the List operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<UserAssignedIdentity>"
+description = "The collection of userAssignedIdentities returned by the listing operation"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The url to get the next page of results, if any"
+
+# --- UserAssignedIdentityRequest ---
+[[types]]
+name = "UserAssignedIdentityRequest"
+description = "Request body for creating or updating a user-assigned identity."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "The geo-location where the resource lives"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+# --- SystemAssignedIdentityProperties ---
+[[types]]
+name = "SystemAssignedIdentityProperties"
+description = "The properties associated with the system assigned identity."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "The id of the tenant which the identity belongs to"
+
+[[types.fields]]
+name = "principalId"
+type = "string"
+description = "The id of the service principal object associated with the created identity"
+
+[[types.fields]]
+name = "clientId"
+type = "string"
+description = "The id of the app associated with the identity"
+
+[[types.fields]]
+name = "clientSecretUrl"
+type = "string"
+description = "The ManagedServiceIdentity DataPlane URL that can be queried to obtain the identity credentials"
+
+# --- SystemAssignedIdentity ---
+[[types]]
+name = "SystemAssignedIdentity"
+description = "Describes a system assigned identity resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The geo-location where the resource lives"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SystemAssignedIdentityProperties"
+description = "The properties associated with the identity"
+
+# ============================================================================
+# User-Assigned Identity Operations
+# ============================================================================
+
+[[operations]]
+name = "ListUserAssignedIdentities"
+rust_name = "list_user_assigned_identities"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.ManagedIdentity/userAssignedIdentities"
+response_type = "UserAssignedIdentityListResult"
+description = "Lists all the userAssignedIdentities available under the specified subscription."
+
+[[operations]]
+name = "ListUserAssignedIdentitiesInGroup"
+rust_name = "list_user_assigned_identities_in_group"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities"
+response_type = "UserAssignedIdentityListResult"
+description = "Lists all the userAssignedIdentities available under the specified ResourceGroup."
+
+[[operations]]
+name = "GetIdentity"
+rust_name = "get_identity"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}"
+response_type = "UserAssignedIdentity"
+description = "Gets the identity."
+
+[[operations]]
+name = "CreateIdentity"
+rust_name = "create_identity"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}"
+request_body_type = "UserAssignedIdentityRequest"
+response_type = "UserAssignedIdentity"
+description = "Create or update an identity in the specified subscription and resource group."
+
+[[operations]]
+name = "DeleteIdentity"
+rust_name = "delete_identity"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{resourceName}"
+description = "Deletes the identity."
+
+# ============================================================================
+# System-Assigned Identity Operation
+# ============================================================================
+# System-assigned identities are attached to individual Azure resources
+# and are accessed via a scope-based URL.
+
+[[operations]]
+name = "GetSystemAssignedIdentity"
+rust_name = "get_system_assigned_identity"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{parentResourceProvider}/{parentResourceType}/{parentResourceName}/providers/Microsoft.ManagedIdentity/identities/default"
+response_type = "SystemAssignedIdentity"
+description = "Gets the systemAssignedIdentity available under the specified SubscriptionId, ResourceGroupName, and resource name."

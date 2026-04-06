@@ -1,0 +1,74 @@
+# Azure Subscriptions API manifest
+# ARM REST API version: 2022-12-01
+# Source: https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list
+
+[api]
+name = "subscriptions"
+display_name = "Azure Subscriptions"
+version = "v1"
+api_version = "2022-12-01"
+service_name = "subscriptions"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/resources/subscriptions/list"
+
+[api.client]
+accessor_name = "subscriptions"
+client_struct = "SubscriptionsClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- SubscriptionInfo ---
+[[types]]
+name = "SubscriptionInfo"
+description = "Summary of a single Azure subscription."
+
+[[types.fields]]
+name = "subscriptionId"
+type = "string"
+description = "The subscription ID."
+
+[[types.fields]]
+name = "displayName"
+type = "string"
+description = "The display name of the subscription."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "The tenant ID the subscription belongs to."
+
+[[types.fields]]
+name = "state"
+type = "string"
+description = "The subscription state: Enabled, Disabled, Warned, Deleted, or PastDue."
+
+# --- SubscriptionListResponse ---
+[[types]]
+name = "SubscriptionListResponse"
+description = "Paginated list of Azure subscriptions."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SubscriptionInfo>"
+required = true
+description = "The list of subscriptions."
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "URL to the next page of results, if any."
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListSubscriptions"
+rust_name = "list_subscriptions"
+method = "GET"
+url_template = "/subscriptions"
+response_type = "SubscriptionListResponse"
+description = "List all subscriptions accessible to the authenticated principal."

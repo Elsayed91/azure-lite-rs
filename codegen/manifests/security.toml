@@ -1,0 +1,369 @@
+# Azure Defender for Cloud (Microsoft.Security) API manifest
+# ARM REST API version: 2022-01-01
+# Source: https://learn.microsoft.com/en-us/rest/api/defenderforcloud/
+
+[api]
+name = "security"
+display_name = "Azure Defender for Cloud"
+version = "v1"
+api_version = "2020-01-01"
+service_name = "security"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/defenderforcloud/"
+
+[api.client]
+accessor_name = "security"
+client_struct = "SecurityClient"
+
+# ============================================================================
+# Alert Types
+# ============================================================================
+
+# --- AlertProperties ---
+[[types]]
+name = "AlertProperties"
+description = "Describes the properties of a security alert."
+
+[[types.fields]]
+name = "alertDisplayName"
+type = "string"
+description = "The display name of the alert"
+
+[[types.fields]]
+name = "alertType"
+type = "string"
+description = "Unique identifier for the detection logic"
+
+[[types.fields]]
+name = "compromisedEntity"
+type = "string"
+description = "The display name of the resource most related to the alert"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "Description of the suspected vulnerability and what it means"
+
+[[types.fields]]
+name = "severity"
+type = "string"
+description = "The risk level of the threat detected (High, Medium, Low, Informational)"
+
+[[types.fields]]
+name = "status"
+type = "string"
+description = "The lifecycle status of the alert (Active, Resolved, Dismissed)"
+
+[[types.fields]]
+name = "startTimeUtc"
+type = "string"
+description = "The UTC time of the first event or activity included in the alert"
+
+[[types.fields]]
+name = "timeGeneratedUtc"
+type = "string"
+description = "The UTC time the alert was generated"
+
+[[types.fields]]
+name = "vendorName"
+type = "string"
+description = "The name of the vendor that raises the alert"
+
+[[types.fields]]
+name = "remediationSteps"
+rust_type = "Vec<String>"
+description = "Manual action items to take to remediate the alert"
+
+[[types.fields]]
+name = "systemSource"
+type = "string"
+description = "The kill chain related intent behind the alert (e.g. Initial Access, Defense Evasion)"
+
+[[types.fields]]
+name = "intent"
+type = "string"
+description = "The kill chain related intent behind the alert"
+
+# --- Alert ---
+[[types]]
+name = "Alert"
+description = "Security alert."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "AlertProperties"
+description = "Alert properties"
+
+# --- AlertListResult ---
+[[types]]
+name = "AlertListResult"
+description = "List of security alerts."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Alert>"
+description = "The list of security alerts"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URI to fetch the next page of alerts"
+
+# ============================================================================
+# Secure Score Types
+# ============================================================================
+
+# --- ScoreDetails ---
+[[types]]
+name = "ScoreDetails"
+description = "Calculation result data."
+
+[[types.fields]]
+name = "max"
+type = "integer"
+description = "Maximum score available"
+
+[[types.fields]]
+name = "current"
+type = "number"
+description = "Current score"
+
+[[types.fields]]
+name = "percentage"
+type = "number"
+description = "Ratio of the current score divided by the maximum (0-1)"
+
+# --- SecureScoreProperties ---
+[[types]]
+name = "SecureScoreProperties"
+description = "Describes the properties of a security score."
+
+[[types.fields]]
+name = "displayName"
+type = "string"
+description = "The initiative's name"
+
+[[types.fields]]
+name = "score"
+rust_type = "ScoreDetails"
+description = "Calculation result data"
+
+[[types.fields]]
+name = "weight"
+type = "int64"
+description = "The relative weight for each subscription"
+
+# --- SecureScore ---
+[[types]]
+name = "SecureScore"
+description = "Microsoft Defender for Cloud secure score."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SecureScoreProperties"
+description = "Secure score properties"
+
+# --- SecureScoreListResult ---
+[[types]]
+name = "SecureScoreListResult"
+description = "List of secure scores."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SecureScore>"
+description = "The collection of security scores"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URI to fetch the next page of results"
+
+# ============================================================================
+# Assessment Types
+# ============================================================================
+
+# --- AssessmentStatus ---
+[[types]]
+name = "AssessmentStatus"
+description = "The result of the assessment."
+
+[[types.fields]]
+name = "code"
+type = "string"
+description = "Programmatic code for the status of the assessment (Healthy, Unhealthy, NotApplicable)"
+
+[[types.fields]]
+name = "cause"
+type = "string"
+description = "Programmatic code for the cause of the assessment status"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "Human readable description of the assessment status"
+
+# --- AssessmentProperties ---
+[[types]]
+name = "AssessmentProperties"
+description = "Describes the properties of an assessment."
+
+[[types.fields]]
+name = "displayName"
+type = "string"
+description = "User-friendly display name of the assessment"
+
+[[types.fields]]
+name = "status"
+rust_type = "AssessmentStatus"
+description = "The result of the assessment"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "Human readable description of the assessment"
+
+[[types.fields]]
+name = "remediationDescription"
+type = "string"
+description = "Human readable description of what you should do to mitigate this security issue"
+
+# --- Assessment ---
+[[types]]
+name = "Assessment"
+description = "Security assessment on a resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "AssessmentProperties"
+description = "Assessment properties"
+
+# --- AssessmentListResult ---
+[[types]]
+name = "AssessmentListResult"
+description = "Page of a list of security assessments."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Assessment>"
+description = "Collection of security assessments in this page"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URI to fetch the next page of assessments"
+
+# ============================================================================
+# Alert Operations
+# ============================================================================
+
+[[operations]]
+name = "ListAlerts"
+rust_name = "list_alerts"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Security/alerts"
+response_type = "AlertListResult"
+description = "List all the alerts that are associated with the subscription."
+
+[[operations]]
+name = "GetAlert"
+rust_name = "get_alert"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}"
+response_type = "Alert"
+description = "Get an alert that is associated with a resource group or a resource in a resource group."
+
+[[operations]]
+name = "UpdateAlertStatus"
+rust_name = "update_alert_status"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/{alertUpdateActionType}"
+description = "Update the alert's state (activate, dismiss, resolve, inProgress, close)."
+
+# ============================================================================
+# Secure Score Operations
+# ============================================================================
+
+[[operations]]
+name = "ListSecureScores"
+rust_name = "list_secure_scores"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores"
+response_type = "SecureScoreListResult"
+description = "List secure scores for all your Microsoft Defender for Cloud initiatives within a subscription."
+
+[[operations]]
+name = "GetSecureScore"
+rust_name = "get_secure_score"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}"
+response_type = "SecureScore"
+description = "Get secure score for a specific Microsoft Defender for Cloud initiative within the current scope."
+
+# ============================================================================
+# Assessment Operations
+# ============================================================================
+
+[[operations]]
+name = "ListAssessments"
+rust_name = "list_assessments"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments"
+response_type = "AssessmentListResult"
+description = "Get security assessments on all your scanned resources inside a subscription scope."
+
+[[operations]]
+name = "GetAssessment"
+rust_name = "get_assessment"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments/{assessmentName}"
+response_type = "Assessment"
+description = "Get a security assessment on your scanned resource."

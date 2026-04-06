@@ -1,0 +1,323 @@
+# Azure RBAC (Role-Based Access Control) API manifest
+# ARM REST API version: 2022-04-01
+# Source: https://learn.microsoft.com/en-us/rest/api/authorization/
+
+[api]
+name = "rbac"
+display_name = "Azure RBAC"
+version = "v1"
+api_version = "2022-04-01"
+service_name = "rbac"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/authorization/"
+
+[api.client]
+accessor_name = "rbac"
+client_struct = "RbacClient"
+
+# ============================================================================
+# RBAC Types
+# ============================================================================
+
+# --- Permission ---
+[[types]]
+name = "Permission"
+description = "Role definition permissions."
+
+[[types.fields]]
+name = "actions"
+rust_type = "Vec<String>"
+description = "Allowed actions"
+
+[[types.fields]]
+name = "notActions"
+rust_type = "Vec<String>"
+description = "Denied actions"
+
+[[types.fields]]
+name = "dataActions"
+rust_type = "Vec<String>"
+description = "Allowed data actions"
+
+[[types.fields]]
+name = "notDataActions"
+rust_type = "Vec<String>"
+description = "Denied data actions"
+
+# --- RoleDefinitionProperties ---
+[[types]]
+name = "RoleDefinitionProperties"
+description = "Role definition properties."
+
+[[types.fields]]
+name = "roleName"
+type = "string"
+description = "The role name"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "The role definition description"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The role type (BuiltInRole or CustomRole)"
+
+[[types.fields]]
+name = "permissions"
+rust_type = "Vec<Permission>"
+description = "Role definition permissions"
+
+[[types.fields]]
+name = "assignableScopes"
+rust_type = "Vec<String>"
+description = "Role definition assignable scopes"
+
+# --- RoleDefinition ---
+[[types]]
+name = "RoleDefinition"
+description = "Role definition."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The role definition ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The role definition name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The role definition type"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RoleDefinitionProperties"
+description = "Role definition properties"
+
+# --- RoleDefinitionListResult ---
+[[types]]
+name = "RoleDefinitionListResult"
+description = "Role definition list operation result."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<RoleDefinition>"
+description = "Role definition list"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to use for getting the next set of results"
+
+# --- RoleAssignmentProperties ---
+[[types]]
+name = "RoleAssignmentProperties"
+description = "Role assignment properties."
+
+[[types.fields]]
+name = "roleDefinitionId"
+type = "string"
+description = "The role definition ID used in the role assignment"
+
+[[types.fields]]
+name = "principalId"
+type = "string"
+description = "The principal ID assigned to the role"
+
+[[types.fields]]
+name = "principalType"
+type = "string"
+description = "The principal type of the assigned principal ID (User, Group, ServicePrincipal, etc.)"
+
+[[types.fields]]
+name = "scope"
+type = "string"
+description = "The role assignment scope"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "The description of role assignment"
+
+[[types.fields]]
+name = "condition"
+type = "string"
+description = "The conditions on the role assignment"
+
+[[types.fields]]
+name = "conditionVersion"
+type = "string"
+description = "Version of the condition"
+
+[[types.fields]]
+name = "createdOn"
+type = "string"
+description = "Time it was created"
+
+[[types.fields]]
+name = "updatedOn"
+type = "string"
+description = "Time it was updated"
+
+[[types.fields]]
+name = "createdBy"
+type = "string"
+description = "ID of the user who created the assignment"
+
+[[types.fields]]
+name = "updatedBy"
+type = "string"
+description = "ID of the user who updated the assignment"
+
+# --- RoleAssignment ---
+[[types]]
+name = "RoleAssignment"
+description = "Role assignments."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The role assignment ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The role assignment name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The role assignment type"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RoleAssignmentProperties"
+description = "Role assignment properties"
+
+# --- RoleAssignmentListResult ---
+[[types]]
+name = "RoleAssignmentListResult"
+description = "Role assignment list operation result."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<RoleAssignment>"
+description = "Role assignment list"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to use for getting the next set of results"
+
+# --- RoleAssignmentRequestProperties ---
+[[types]]
+name = "RoleAssignmentRequestProperties"
+description = "Role assignment request properties."
+
+[[types.fields]]
+name = "roleDefinitionId"
+type = "string"
+required = true
+description = "The role definition ID used in the role assignment"
+
+[[types.fields]]
+name = "principalId"
+type = "string"
+required = true
+description = "The principal ID assigned to the role"
+
+[[types.fields]]
+name = "principalType"
+type = "string"
+description = "The principal type of the assigned principal ID"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "The description of role assignment"
+
+[[types.fields]]
+name = "condition"
+type = "string"
+description = "The conditions on the role assignment"
+
+[[types.fields]]
+name = "conditionVersion"
+type = "string"
+description = "Version of the condition"
+
+# --- RoleAssignmentCreateRequest ---
+[[types]]
+name = "RoleAssignmentCreateRequest"
+description = "Role assignment create parameters."
+
+[[types.fields]]
+name = "properties"
+rust_type = "RoleAssignmentRequestProperties"
+required = true
+description = "Role assignment properties"
+
+# ============================================================================
+# Role Definition Operations
+# ============================================================================
+
+[[operations]]
+name = "ListRoleDefinitions"
+rust_name = "list_role_definitions"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions"
+response_type = "RoleDefinitionListResult"
+description = "Lists all role definitions applicable at the subscription scope."
+
+[[operations]]
+name = "GetRoleDefinition"
+rust_name = "get_role_definition"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}"
+response_type = "RoleDefinition"
+description = "Gets a role definition by ID."
+
+# ============================================================================
+# Role Assignment Operations
+# ============================================================================
+
+[[operations]]
+name = "ListRoleAssignments"
+rust_name = "list_role_assignments"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments"
+response_type = "RoleAssignmentListResult"
+description = "Lists all role assignments for the subscription."
+
+[[operations]]
+name = "GetRoleAssignment"
+rust_name = "get_role_assignment"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentId}"
+response_type = "RoleAssignment"
+description = "Gets a role assignment by ID."
+
+[[operations]]
+name = "CreateRoleAssignment"
+rust_name = "create_role_assignment"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}"
+request_body_type = "RoleAssignmentCreateRequest"
+response_type = "RoleAssignment"
+description = "Creates a role assignment at the subscription scope."
+
+[[operations]]
+name = "DeleteRoleAssignment"
+rust_name = "delete_role_assignment"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentId}"
+description = "Deletes a role assignment."

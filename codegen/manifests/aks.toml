@@ -1,0 +1,600 @@
+# Azure Kubernetes Service (AKS) API manifest
+# ARM REST API version: 2024-02-01
+# Source: https://learn.microsoft.com/en-us/rest/api/aks/
+
+[api]
+name = "aks"
+display_name = "Azure Kubernetes Service"
+version = "v1"
+api_version = "2024-07-01"
+service_name = "aks"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/aks/"
+
+[api.client]
+accessor_name = "aks"
+client_struct = "AksClient"
+
+# ============================================================================
+# Managed Cluster Types
+# ============================================================================
+
+# --- ManagedClusterAgentPoolProfile ---
+[[types]]
+name = "ManagedClusterAgentPoolProfile"
+description = "Profile for the container service agent pool."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "Name of the agent pool"
+
+[[types.fields]]
+name = "count"
+type = "integer"
+description = "Number of agents (VMs) in the node pool"
+
+[[types.fields]]
+name = "vmSize"
+type = "string"
+description = "VM size of the agent nodes (e.g. Standard_D2s_v3)"
+
+[[types.fields]]
+name = "osType"
+type = "string"
+description = "Operating system type (Linux, Windows)"
+
+[[types.fields]]
+name = "mode"
+type = "string"
+description = "Agent pool mode (System, User)"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Agent pool type (VirtualMachineScaleSets, AvailabilitySet)"
+
+[[types.fields]]
+name = "maxPods"
+type = "integer"
+description = "Maximum number of pods that can run on a node"
+
+[[types.fields]]
+name = "availabilityZones"
+rust_type = "Vec<String>"
+description = "List of availability zones for the agent pool"
+
+[[types.fields]]
+name = "nodeLabels"
+rust_type = "HashMap<String, String>"
+description = "Node labels to be applied to the nodes"
+
+# --- ManagedClusterProperties ---
+[[types]]
+name = "ManagedClusterProperties"
+description = "Properties of a managed cluster."
+
+[[types.fields]]
+name = "kubernetesVersion"
+type = "string"
+description = "Kubernetes version for the cluster"
+
+[[types.fields]]
+name = "currentKubernetesVersion"
+type = "string"
+description = "The current Kubernetes version running on the cluster"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state (Succeeded, Failed, Creating, Deleting, etc.)"
+
+[[types.fields]]
+name = "dnsPrefix"
+type = "string"
+description = "DNS prefix used in creating the FQDN for the cluster"
+
+[[types.fields]]
+name = "fqdn"
+type = "string"
+description = "FQDN for the master pool"
+
+[[types.fields]]
+name = "nodeResourceGroup"
+type = "string"
+description = "Name of the resource group containing agent pool nodes"
+
+[[types.fields]]
+name = "enableRBAC"
+type = "boolean"
+description = "Whether to enable Kubernetes Role-Based Access Control"
+
+[[types.fields]]
+name = "maxAgentPools"
+type = "integer"
+description = "The max number of agent pools for the managed cluster"
+
+[[types.fields]]
+name = "agentPoolProfiles"
+rust_type = "Vec<ManagedClusterAgentPoolProfile>"
+description = "Properties of the agent pool"
+
+# --- ManagedClusterIdentity ---
+[[types]]
+name = "ManagedClusterIdentity"
+description = "Identity for the managed cluster."
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Identity type (SystemAssigned, UserAssigned, None)"
+
+[[types.fields]]
+name = "principalId"
+type = "string"
+description = "Principal ID of the system-assigned identity"
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "Tenant ID of the system-assigned identity"
+
+# --- ManagedCluster ---
+[[types]]
+name = "ManagedCluster"
+description = "Managed cluster resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "identity"
+rust_type = "ManagedClusterIdentity"
+description = "The identity of the managed cluster"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ManagedClusterProperties"
+description = "Managed cluster properties"
+
+# --- ManagedClusterListResult ---
+[[types]]
+name = "ManagedClusterListResult"
+description = "The response from the List Managed Clusters operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<ManagedCluster>"
+description = "The list of managed clusters"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of managed cluster results"
+
+# --- ManagedClusterCreateOrUpdateProperties ---
+[[types]]
+name = "ManagedClusterCreateOrUpdateProperties"
+description = "Properties for creating or updating a managed cluster."
+
+[[types.fields]]
+name = "kubernetesVersion"
+type = "string"
+description = "Kubernetes version for the cluster"
+
+[[types.fields]]
+name = "dnsPrefix"
+type = "string"
+required = true
+description = "DNS prefix for the cluster FQDN"
+
+[[types.fields]]
+name = "enableRBAC"
+type = "boolean"
+description = "Whether to enable Kubernetes RBAC"
+
+[[types.fields]]
+name = "agentPoolProfiles"
+rust_type = "Vec<ManagedClusterAgentPoolProfile>"
+description = "Agent pool configurations for the cluster"
+
+# --- ManagedClusterCreateRequest ---
+[[types]]
+name = "ManagedClusterCreateRequest"
+description = "Request body for creating or updating a managed cluster."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "identity"
+rust_type = "ManagedClusterIdentity"
+description = "The identity of the managed cluster (use type=SystemAssigned)"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ManagedClusterCreateOrUpdateProperties"
+description = "Managed cluster create/update properties"
+
+# ============================================================================
+# Agent Pool (Node Pool) Types
+# ============================================================================
+
+# --- AgentPoolProperties ---
+[[types]]
+name = "AgentPoolProperties"
+description = "Properties of an agent pool."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state (Succeeded, Failed, Creating, etc.)"
+
+[[types.fields]]
+name = "count"
+type = "integer"
+description = "Number of nodes in the pool"
+
+[[types.fields]]
+name = "vmSize"
+type = "string"
+description = "VM size for the agent nodes"
+
+[[types.fields]]
+name = "osType"
+type = "string"
+description = "Operating system type (Linux, Windows)"
+
+[[types.fields]]
+name = "mode"
+type = "string"
+description = "Agent pool mode (System, User)"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Agent pool type (VirtualMachineScaleSets, AvailabilitySet)"
+
+[[types.fields]]
+name = "maxPods"
+type = "integer"
+description = "Maximum pods that can run on a node"
+
+[[types.fields]]
+name = "availabilityZones"
+rust_type = "Vec<String>"
+description = "Availability zones for the node pool"
+
+[[types.fields]]
+name = "nodeLabels"
+rust_type = "HashMap<String, String>"
+description = "Node labels"
+
+# --- AgentPool ---
+[[types]]
+name = "AgentPool"
+description = "Agent pool resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "AgentPoolProperties"
+description = "Agent pool properties"
+
+# --- AgentPoolListResult ---
+[[types]]
+name = "AgentPoolListResult"
+description = "The response from the List Agent Pools operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<AgentPool>"
+description = "The list of agent pools"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of results"
+
+# --- AgentPoolCreateOrUpdateProperties ---
+[[types]]
+name = "AgentPoolCreateOrUpdateProperties"
+description = "Properties for creating or updating an agent pool."
+
+[[types.fields]]
+name = "count"
+type = "integer"
+required = true
+description = "Number of nodes in the pool"
+
+[[types.fields]]
+name = "vmSize"
+type = "string"
+required = true
+description = "VM size for agent nodes"
+
+[[types.fields]]
+name = "osType"
+type = "string"
+description = "OS type (Linux, Windows)"
+
+[[types.fields]]
+name = "mode"
+type = "string"
+description = "Agent pool mode (System, User)"
+
+[[types.fields]]
+name = "maxPods"
+type = "integer"
+description = "Max pods per node"
+
+[[types.fields]]
+name = "nodeLabels"
+rust_type = "HashMap<String, String>"
+description = "Node labels"
+
+# --- AgentPoolCreateRequest ---
+[[types]]
+name = "AgentPoolCreateRequest"
+description = "Request body for creating or updating an agent pool."
+
+[[types.fields]]
+name = "properties"
+rust_type = "AgentPoolCreateOrUpdateProperties"
+description = "Agent pool create/update properties"
+
+# ============================================================================
+# Credentials Types
+# ============================================================================
+
+# --- CredentialResult ---
+[[types]]
+name = "CredentialResult"
+description = "A single credential entry."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Name of the credential"
+
+[[types.fields]]
+name = "value"
+type = "string"
+description = "Base64-encoded kubeconfig string"
+
+# --- CredentialResults ---
+[[types]]
+name = "CredentialResults"
+description = "The list of credential result response."
+
+[[types.fields]]
+name = "kubeconfigs"
+rust_type = "Vec<CredentialResult>"
+description = "List of credential results"
+
+# ============================================================================
+# Run Command Types
+# ============================================================================
+
+# --- RunCommandRequest ---
+[[types]]
+name = "RunCommandRequest"
+description = "Request body for running a command against a managed cluster."
+
+[[types.fields]]
+name = "command"
+type = "string"
+required = true
+description = "The command to run (e.g. 'kubectl get pods')"
+
+[[types.fields]]
+name = "context"
+type = "string"
+description = "Base64-encoded zip file with additional files for the command"
+
+[[types.fields]]
+name = "clusterToken"
+type = "string"
+description = "AuthToken issued by the cluster"
+
+# --- RunCommandResultProperties ---
+[[types]]
+name = "RunCommandResultProperties"
+description = "Properties of a run command result."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state of the command execution"
+
+[[types.fields]]
+name = "exitCode"
+type = "integer"
+description = "Exit code of the command"
+
+[[types.fields]]
+name = "startedAt"
+type = "string"
+description = "Time the command started"
+
+[[types.fields]]
+name = "finishedAt"
+type = "string"
+description = "Time the command finished"
+
+[[types.fields]]
+name = "logs"
+type = "string"
+description = "Stdout/stderr output of the command"
+
+[[types.fields]]
+name = "reason"
+type = "string"
+description = "Reason for the provisioning state"
+
+# --- RunCommandResult ---
+[[types]]
+name = "RunCommandResult"
+description = "Run command result."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID of the result"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RunCommandResultProperties"
+description = "Run command result properties"
+
+# ============================================================================
+# Cluster Operations
+# ============================================================================
+
+[[operations]]
+name = "ListClusters"
+rust_name = "list_clusters"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters"
+response_type = "ManagedClusterListResult"
+description = "List all managed clusters in the subscription."
+
+[[operations]]
+name = "GetCluster"
+rust_name = "get_cluster"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}"
+response_type = "ManagedCluster"
+description = "Get a managed cluster."
+
+[[operations]]
+name = "CreateCluster"
+rust_name = "create_cluster"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}"
+request_body_type = "ManagedClusterCreateRequest"
+response_type = "ManagedCluster"
+description = "Create or update a managed cluster."
+
+[[operations]]
+name = "DeleteCluster"
+rust_name = "delete_cluster"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}"
+description = "Delete a managed cluster."
+
+# ============================================================================
+# Node Pool (Agent Pool) Operations
+# ============================================================================
+
+[[operations]]
+name = "ListNodePools"
+rust_name = "list_node_pools"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/agentPools"
+response_type = "AgentPoolListResult"
+description = "List agent pools in a managed cluster."
+
+[[operations]]
+name = "GetNodePool"
+rust_name = "get_node_pool"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/agentPools/{agentPoolName}"
+response_type = "AgentPool"
+description = "Get the specified agent pool in a managed cluster."
+
+[[operations]]
+name = "CreateNodePool"
+rust_name = "create_node_pool"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/agentPools/{agentPoolName}"
+request_body_type = "AgentPoolCreateRequest"
+response_type = "AgentPool"
+description = "Create or update an agent pool in a managed cluster."
+
+[[operations]]
+name = "DeleteNodePool"
+rust_name = "delete_node_pool"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/agentPools/{agentPoolName}"
+description = "Delete an agent pool in a managed cluster."
+
+# ============================================================================
+# Credentials + Run Command Operations
+# ============================================================================
+
+[[operations]]
+name = "GetCredentials"
+rust_name = "get_credentials"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/listClusterUserCredential"
+response_type = "CredentialResults"
+description = "List the user credentials of a managed cluster."
+
+[[operations]]
+name = "RunCommand"
+rust_name = "run_command"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/runCommand"
+request_body_type = "RunCommandRequest"
+response_type = "RunCommandResult"
+description = "Run a kubectl command against a managed cluster (async — returns 202)."
+
+[[operations]]
+name = "GetCommandResult"
+rust_name = "get_command_result"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{resourceName}/commandResults/{commandId}"
+response_type = "RunCommandResult"
+description = "Get the result of a previously issued run command (poll until provisioningState is succeeded/failed)."

@@ -1,0 +1,767 @@
+# Azure Key Vault API manifest
+# ARM management plane: api-version 2023-07-01
+# Source: https://learn.microsoft.com/en-us/rest/api/keyvault/
+#
+# NOTE: WrapKey and UnwrapKey are cryptographic data-plane operations that
+# require the vault-scoped endpoint (https://{vault}.vault.azure.net) and
+# a different auth scope. They are NOT included here and must be implemented
+# as custom hand-written methods in api/keyvault.rs if needed.
+
+[api]
+name = "keyvault"
+display_name = "Azure Key Vault"
+version = "v1"
+api_version = "2023-07-01"
+service_name = "keyvault"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/keyvault/"
+
+[api.client]
+accessor_name = "keyvault"
+client_struct = "KeyVaultClient"
+
+# ============================================================================
+# Vault Types
+# ============================================================================
+
+# --- VaultSku ---
+[[types]]
+name = "VaultSku"
+description = "SKU details for a Key Vault."
+
+[[types.fields]]
+name = "family"
+type = "string"
+description = "SKU family name (e.g., 'A')"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "SKU name (Standard or Premium)"
+
+# --- AccessPolicyEntry ---
+[[types]]
+name = "AccessPolicyEntry"
+description = "An identity that has access to the key vault."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "The Azure Active Directory tenant ID"
+
+[[types.fields]]
+name = "objectId"
+type = "string"
+description = "The object ID of the user, service principal, or security group"
+
+[[types.fields]]
+name = "permissions"
+rust_type = "AccessPermissions"
+description = "Permissions the identity has for keys, secrets, and certificates"
+
+# --- AccessPermissions ---
+[[types]]
+name = "AccessPermissions"
+description = "Permissions the identity has for keys, secrets, and certificates."
+
+[[types.fields]]
+name = "keys"
+rust_type = "Vec<String>"
+description = "Permissions to keys"
+
+[[types.fields]]
+name = "secrets"
+rust_type = "Vec<String>"
+description = "Permissions to secrets"
+
+[[types.fields]]
+name = "certificates"
+rust_type = "Vec<String>"
+description = "Permissions to certificates"
+
+[[types.fields]]
+name = "storage"
+rust_type = "Vec<String>"
+description = "Permissions to storage accounts"
+
+# --- IpRule ---
+[[types]]
+name = "IpRule"
+description = "A rule governing the accessibility from a specific IP address or IP range."
+
+[[types.fields]]
+name = "value"
+type = "string"
+description = "IPv4 address range in CIDR notation (e.g., '124.56.78.91' or '124.56.78.0/24')"
+
+# --- VirtualNetworkRule ---
+[[types]]
+name = "VirtualNetworkRule"
+description = "A rule governing the accessibility from a specific virtual network."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID of a subnet (e.g., '/subscriptions/.../subnets/subnet1')"
+
+[[types.fields]]
+name = "ignoreMissingVnetServiceEndpoint"
+type = "boolean"
+description = "Property to specify whether NRP will ignore the check if parent subnet has serviceEndpoints configured"
+
+# --- NetworkRuleSet ---
+[[types]]
+name = "NetworkRuleSet"
+description = "A set of rules governing the network accessibility of a vault."
+
+[[types.fields]]
+name = "bypass"
+type = "string"
+description = "Specifies which traffic can bypass network rules (AzureServices or None)"
+
+[[types.fields]]
+name = "defaultAction"
+type = "string"
+description = "The default action when no rule matches (Allow or Deny)"
+
+[[types.fields]]
+name = "ipRules"
+rust_type = "Vec<IpRule>"
+description = "The list of IP address rules"
+
+[[types.fields]]
+name = "virtualNetworkRules"
+rust_type = "Vec<VirtualNetworkRule>"
+description = "The list of virtual network rules"
+
+# --- VaultProperties ---
+[[types]]
+name = "VaultProperties"
+description = "Properties of the vault."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+description = "The Azure Active Directory tenant ID"
+
+[[types.fields]]
+name = "sku"
+rust_type = "VaultSku"
+description = "SKU details"
+
+[[types.fields]]
+name = "accessPolicies"
+rust_type = "Vec<AccessPolicyEntry>"
+description = "An array of 0 to 1024 identities that have access to the key vault"
+
+[[types.fields]]
+name = "vaultUri"
+type = "string"
+description = "The URI of the vault for performing operations on keys and secrets"
+
+[[types.fields]]
+name = "enabledForDeployment"
+type = "boolean"
+description = "Property to specify whether Azure VMs can retrieve certificates stored as secrets"
+
+[[types.fields]]
+name = "enabledForTemplateDeployment"
+type = "boolean"
+description = "Property to specify whether Azure Resource Manager is permitted to retrieve secrets"
+
+[[types.fields]]
+name = "enableSoftDelete"
+type = "boolean"
+description = "Property specifying whether recoverable deletion is enabled for this vault"
+
+[[types.fields]]
+name = "softDeleteRetentionInDays"
+type = "integer"
+description = "softDelete data retention days (7-90)"
+
+[[types.fields]]
+name = "enablePurgeProtection"
+type = "boolean"
+description = "Property specifying whether protection against purge is enabled"
+
+[[types.fields]]
+name = "enableRbacAuthorization"
+type = "boolean"
+description = "Property that controls how data actions are authorized"
+
+[[types.fields]]
+name = "networkAcls"
+rust_type = "NetworkRuleSet"
+description = "Rules governing the accessibility of the key vault from specific network locations"
+
+[[types.fields]]
+name = "publicNetworkAccess"
+type = "string"
+description = "Property to specify whether the vault will accept traffic from public internet (Enabled or Disabled)"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state of the vault"
+
+# --- Vault ---
+[[types]]
+name = "Vault"
+description = "Resource information with extended details."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the key vault"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "The supported Azure location where the key vault should be created"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VaultProperties"
+description = "Properties of the vault"
+
+# --- VaultListResult ---
+[[types]]
+name = "VaultListResult"
+description = "List of vaults."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Vault>"
+description = "The list of key vaults"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of vaults"
+
+# --- VaultCreateOrUpdateProperties ---
+[[types]]
+name = "VaultCreateOrUpdateProperties"
+description = "Properties for creating or updating a vault."
+
+[[types.fields]]
+name = "tenantId"
+type = "string"
+required = true
+description = "The Azure Active Directory tenant ID"
+
+[[types.fields]]
+name = "sku"
+rust_type = "VaultSku"
+required = true
+description = "SKU details"
+
+[[types.fields]]
+name = "accessPolicies"
+rust_type = "Vec<AccessPolicyEntry>"
+description = "An array of 0 to 1024 identities that have access to the key vault"
+
+[[types.fields]]
+name = "enabledForDeployment"
+type = "boolean"
+description = "Property to specify whether Azure VMs can retrieve certificates stored as secrets"
+
+[[types.fields]]
+name = "enableSoftDelete"
+type = "boolean"
+description = "Property specifying whether recoverable deletion is enabled"
+
+[[types.fields]]
+name = "enablePurgeProtection"
+type = "boolean"
+description = "Property specifying whether protection against purge is enabled"
+
+[[types.fields]]
+name = "enableRbacAuthorization"
+type = "boolean"
+description = "Property that controls how data actions are authorized"
+
+[[types.fields]]
+name = "networkAcls"
+rust_type = "NetworkRuleSet"
+description = "Rules governing the accessibility of the key vault from specific network locations"
+
+# --- VaultCreateRequest ---
+[[types]]
+name = "VaultCreateRequest"
+description = "Parameters for creating or updating a vault."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "The supported Azure location where the key vault should be created"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "VaultCreateOrUpdateProperties"
+required = true
+description = "Properties of the vault"
+
+# ============================================================================
+# Secret Types (ARM management plane — metadata only, no secret values)
+# ============================================================================
+
+# --- SecretAttributes ---
+[[types]]
+name = "SecretAttributes"
+description = "The secret management attributes."
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+description = "Determines whether the object is enabled"
+
+[[types.fields]]
+name = "nbf"
+type = "int64"
+description = "Not before date in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "exp"
+type = "int64"
+description = "Expiry date in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "created"
+type = "int64"
+description = "Creation time in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "updated"
+type = "int64"
+description = "Last updated time in UTC (Unix epoch)"
+
+# --- SecretProperties ---
+[[types]]
+name = "SecretProperties"
+description = "Properties of the secret."
+
+[[types.fields]]
+name = "value"
+type = "string"
+description = "The value of the secret (only present when creating/updating)"
+
+[[types.fields]]
+name = "contentType"
+type = "string"
+description = "The content type of the secret"
+
+[[types.fields]]
+name = "attributes"
+rust_type = "SecretAttributes"
+description = "The secret management attributes"
+
+[[types.fields]]
+name = "secretUri"
+type = "string"
+description = "The URI to retrieve the current version of the secret"
+
+[[types.fields]]
+name = "secretUriWithVersion"
+type = "string"
+description = "The URI to retrieve the specific version of the secret"
+
+# --- Secret ---
+[[types]]
+name = "Secret"
+description = "Resource information with extended details."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the secret"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Azure location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SecretProperties"
+description = "Properties of the secret"
+
+# --- SecretListResult ---
+[[types]]
+name = "SecretListResult"
+description = "List of secrets."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Secret>"
+description = "The list of secrets"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of secrets"
+
+# --- SecretCreateOrUpdateProperties ---
+[[types]]
+name = "SecretCreateOrUpdateProperties"
+description = "Properties for creating or updating a secret."
+
+[[types.fields]]
+name = "value"
+type = "string"
+description = "The value of the secret"
+
+[[types.fields]]
+name = "contentType"
+type = "string"
+description = "The content type of the secret"
+
+[[types.fields]]
+name = "attributes"
+rust_type = "SecretAttributes"
+description = "The attributes of the secret"
+
+# --- SecretCreateRequest ---
+[[types]]
+name = "SecretCreateRequest"
+description = "Parameters for creating or updating a secret."
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SecretCreateOrUpdateProperties"
+required = true
+description = "Properties of the secret"
+
+# ============================================================================
+# Key Types (ARM management plane)
+# ============================================================================
+
+# --- KeyAttributes ---
+[[types]]
+name = "KeyAttributes"
+description = "The object attributes managed by the Azure Key Vault service."
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+description = "Determines whether the object is enabled"
+
+[[types.fields]]
+name = "nbf"
+type = "int64"
+description = "Not before date in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "exp"
+type = "int64"
+description = "Expiry date in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "created"
+type = "int64"
+description = "Creation time in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "updated"
+type = "int64"
+description = "Last updated time in UTC (Unix epoch)"
+
+[[types.fields]]
+name = "exportable"
+type = "boolean"
+description = "Indicates if the private key can be exported"
+
+[[types.fields]]
+name = "recoveryLevel"
+type = "string"
+description = "Reflects the deletion recovery level currently in effect"
+
+# --- KeyProperties ---
+[[types]]
+name = "KeyProperties"
+description = "The properties of the key."
+
+[[types.fields]]
+name = "attributes"
+rust_type = "KeyAttributes"
+description = "The attributes of the key"
+
+[[types.fields]]
+name = "kty"
+type = "string"
+description = "The type of the key (RSA, EC, oct-HSM, etc.)"
+
+[[types.fields]]
+name = "keyOps"
+rust_type = "Vec<String>"
+description = "The permitted operations on the key"
+
+[[types.fields]]
+name = "keySize"
+type = "integer"
+description = "The key size in bits (for RSA)"
+
+[[types.fields]]
+name = "curveName"
+type = "string"
+description = "The elliptic curve name (for EC keys)"
+
+[[types.fields]]
+name = "keyUri"
+type = "string"
+description = "The URI to retrieve the current version of the key"
+
+[[types.fields]]
+name = "keyUriWithVersion"
+type = "string"
+description = "The URI to retrieve the specific version of the key"
+
+# --- Key ---
+[[types]]
+name = "Key"
+description = "The key resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the key"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Azure location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "KeyProperties"
+description = "The properties of the key"
+
+# --- KeyListResult ---
+[[types]]
+name = "KeyListResult"
+description = "The page of keys."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Key>"
+description = "The list of keys"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URL to get the next set of keys"
+
+# --- KeyCreateProperties ---
+[[types]]
+name = "KeyCreateProperties"
+description = "Properties for creating a key."
+
+[[types.fields]]
+name = "kty"
+type = "string"
+required = true
+description = "The type of the key to create (RSA, EC, oct-HSM, etc.)"
+
+[[types.fields]]
+name = "keySize"
+type = "integer"
+description = "The key size in bits"
+
+[[types.fields]]
+name = "curveName"
+type = "string"
+description = "Elliptic curve name"
+
+[[types.fields]]
+name = "keyOps"
+rust_type = "Vec<String>"
+description = "The permitted operations on the key"
+
+[[types.fields]]
+name = "attributes"
+rust_type = "KeyAttributes"
+description = "Key attributes"
+
+# --- KeyCreateRequest ---
+[[types]]
+name = "KeyCreateRequest"
+description = "Parameters for creating a key."
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "KeyCreateProperties"
+required = true
+description = "Properties to create the key"
+
+# ============================================================================
+# Vault Operations
+# ============================================================================
+
+[[operations]]
+name = "ListVaults"
+rust_name = "list_vaults"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults"
+response_type = "VaultListResult"
+description = "The List operation gets information about the vaults associated with the subscription."
+
+[[operations]]
+name = "ListVaultsInGroup"
+rust_name = "list_vaults_in_group"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults"
+response_type = "VaultListResult"
+description = "The List operation gets information about the vaults associated with the subscription and within the specified resource group."
+
+[[operations]]
+name = "GetVault"
+rust_name = "get_vault"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}"
+response_type = "Vault"
+description = "Gets the specified Azure key vault."
+
+[[operations]]
+name = "CreateVault"
+rust_name = "create_vault"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}"
+request_body_type = "VaultCreateRequest"
+response_type = "Vault"
+description = "Create or update a key vault in the specified subscription."
+
+[[operations]]
+name = "DeleteVault"
+rust_name = "delete_vault"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}"
+description = "Deletes the specified Azure key vault."
+
+# ============================================================================
+# Secret Operations (ARM management plane — no secret values in list responses)
+# ============================================================================
+
+[[operations]]
+name = "ListSecrets"
+rust_name = "list_secrets"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets"
+response_type = "SecretListResult"
+description = "The List operation gets information about the secrets in a vault. NOTE: This operation does not return secret values."
+
+[[operations]]
+name = "GetSecret"
+rust_name = "get_secret"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}"
+response_type = "Secret"
+description = "Gets the specified secret. NOTE: This operation does not return the secret value."
+
+[[operations]]
+name = "SetSecret"
+rust_name = "set_secret"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/secrets/{secretName}"
+request_body_type = "SecretCreateRequest"
+response_type = "Secret"
+description = "Create or update a secret in a key vault in the specified subscription."
+
+# NOTE: DeleteSecret is not available via the ARM management plane (returns 405).
+# Use the Key Vault data plane API (https://{vault}.vault.azure.net) to delete secrets.
+
+# ============================================================================
+# Key Operations (ARM management plane)
+# ============================================================================
+
+[[operations]]
+name = "ListKeys"
+rust_name = "list_keys"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys"
+response_type = "KeyListResult"
+description = "Lists the keys in the specified key vault."
+
+[[operations]]
+name = "GetKey"
+rust_name = "get_key"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}"
+response_type = "Key"
+description = "Gets the current version of the specified key from the specified key vault."
+
+[[operations]]
+name = "CreateKey"
+rust_name = "create_key"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/keys/{keyName}"
+request_body_type = "KeyCreateRequest"
+response_type = "Key"
+description = "Creates the first version of a new key if it does not exist. If it already exists, then the existing key is returned without any write operations being performed."
+
+# NOTE: DeleteKey is not available via the ARM management plane (returns 405).
+# Use the Key Vault data plane API (https://{vault}.vault.azure.net) to delete keys.

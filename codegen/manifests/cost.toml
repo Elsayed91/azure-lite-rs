@@ -1,0 +1,518 @@
+# Azure Cost Management API manifest
+# ARM REST API versions:
+#   Budgets (Microsoft.Consumption): 2023-11-01
+#   Cost Query / Forecast (Microsoft.CostManagement): 2023-11-01
+#   Usage Details (Microsoft.Consumption): 2023-03-01 (see API layer)
+# Source: https://learn.microsoft.com/en-us/rest/api/cost-management/
+
+[api]
+name = "cost"
+display_name = "Azure Cost Management"
+version = "v1"
+api_version = "2023-11-01"
+service_name = "cost"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/cost-management/"
+
+[api.client]
+accessor_name = "cost"
+client_struct = "CostClient"
+
+# ============================================================================
+# Budget Types (Microsoft.Consumption)
+# ============================================================================
+
+# --- BudgetTimePeriod ---
+[[types]]
+name = "BudgetTimePeriod"
+description = "The start and end date for a budget."
+
+[[types.fields]]
+name = "startDate"
+type = "string"
+required = true
+description = "The start date for the budget (ISO 8601 date)"
+
+[[types.fields]]
+name = "endDate"
+type = "string"
+description = "The end date for the budget (ISO 8601 date)"
+
+# --- CurrentSpend ---
+[[types]]
+name = "CurrentSpend"
+description = "The current amount of cost which is being tracked for a budget."
+
+[[types.fields]]
+name = "amount"
+type = "number"
+description = "The total amount of cost which is being tracked by the budget"
+
+[[types.fields]]
+name = "unit"
+type = "string"
+description = "The unit of measure for the budget amount"
+
+# --- BudgetProperties ---
+[[types]]
+name = "BudgetProperties"
+description = "The properties of a budget."
+
+[[types.fields]]
+name = "category"
+type = "string"
+description = "The category of the budget (Cost or Usage)"
+
+[[types.fields]]
+name = "amount"
+type = "number"
+required = true
+description = "The total amount of cost to track with the budget"
+
+[[types.fields]]
+name = "timeGrain"
+type = "string"
+required = true
+description = "The time covered by a budget (Monthly, Quarterly, Annually, BillingMonth, BillingQuarter, BillingAnnual)"
+
+[[types.fields]]
+name = "timePeriod"
+rust_type = "BudgetTimePeriod"
+required = true
+description = "Has start and end date of the budget"
+
+[[types.fields]]
+name = "currentSpend"
+rust_type = "CurrentSpend"
+description = "The current amount of cost which is being tracked for a budget"
+
+[[types.fields]]
+name = "filter"
+rust_type = "serde_json::Value"
+description = "May be used to filter budgets by resource group, resource, or meter"
+
+# --- Budget ---
+[[types]]
+name = "Budget"
+description = "A budget resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource identifier"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "eTag"
+type = "string"
+description = "eTag of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "BudgetProperties"
+description = "The properties of the budget"
+
+# --- BudgetListResult ---
+[[types]]
+name = "BudgetListResult"
+description = "Result of listing budgets."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Budget>"
+description = "The list of budgets"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The link (URL) to the next page of results"
+
+# --- BudgetCreateRequest ---
+[[types]]
+name = "BudgetCreateRequest"
+description = "The request body for creating or updating a budget."
+
+[[types.fields]]
+name = "eTag"
+type = "string"
+description = "eTag of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "BudgetProperties"
+required = true
+description = "The properties of the budget"
+
+# ============================================================================
+# Cost Query / Forecast Types (Microsoft.CostManagement)
+# ============================================================================
+
+# --- QueryColumn ---
+[[types]]
+name = "QueryColumn"
+description = "QueryColumn."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of column"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of column"
+
+# --- QueryProperties ---
+[[types]]
+name = "QueryProperties"
+description = "QueryResult."
+
+[[types.fields]]
+name = "columns"
+rust_type = "Vec<QueryColumn>"
+description = "Array of columns"
+
+[[types.fields]]
+name = "rows"
+rust_type = "Vec<serde_json::Value>"
+description = "Array of rows"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The link to the next page"
+
+# --- QueryResult ---
+[[types]]
+name = "QueryResult"
+description = "Result of query. It contains all columns listed under groupings and aggregation."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource id"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "properties"
+rust_type = "QueryProperties"
+description = "Query result properties"
+
+# --- QueryTimePeriod ---
+[[types]]
+name = "QueryTimePeriod"
+description = "The start and end date for pulling data for the query."
+
+[[types.fields]]
+name = "from"
+type = "string"
+required = true
+serde_rename = "from"
+description = "The start date to pull data from"
+
+[[types.fields]]
+name = "to"
+type = "string"
+required = true
+serde_rename = "to"
+description = "The end date to pull data to"
+
+# --- QueryDataset ---
+[[types]]
+name = "QueryDataset"
+description = "The definition of data present in the query."
+
+[[types.fields]]
+name = "granularity"
+type = "string"
+description = "The granularity of rows in the query (None, Daily)"
+
+[[types.fields]]
+name = "aggregation"
+rust_type = "serde_json::Value"
+description = "Dictionary of aggregation expression to use in the query"
+
+[[types.fields]]
+name = "grouping"
+rust_type = "Vec<serde_json::Value>"
+description = "Array of group by expression to use in the query"
+
+[[types.fields]]
+name = "filter"
+rust_type = "serde_json::Value"
+description = "Has filter expression to use in the query"
+
+# --- QueryDefinition ---
+[[types]]
+name = "QueryDefinition"
+description = "The definition of a query."
+
+[[types.fields]]
+name = "type"
+type = "string"
+required = true
+serde_rename = "type"
+description = "The type of the query (Usage, ActualCost, AmortizedCost)"
+
+[[types.fields]]
+name = "timeframe"
+type = "string"
+required = true
+description = "The time frame for pulling data for the query (WeekToDate, MonthToDate, BillingMonthToDate, TheLastBillingMonth, TheLastMonth, Custom)"
+
+[[types.fields]]
+name = "timePeriod"
+rust_type = "QueryTimePeriod"
+description = "Has time period for pulling data for the query"
+
+[[types.fields]]
+name = "dataset"
+rust_type = "QueryDataset"
+required = true
+description = "Has definition for data in this query"
+
+# --- ForecastDefinition ---
+[[types]]
+name = "ForecastDefinition"
+description = "The definition of a forecast."
+
+[[types.fields]]
+name = "type"
+type = "string"
+required = true
+serde_rename = "type"
+description = "The type of the forecast (Usage, ActualCost, AmortizedCost)"
+
+[[types.fields]]
+name = "timeframe"
+type = "string"
+required = true
+description = "The time frame for pulling data for the forecast (WeekToDate, MonthToDate, BillingMonthToDate, TheLastBillingMonth, TheLastMonth, Custom)"
+
+[[types.fields]]
+name = "timePeriod"
+rust_type = "QueryTimePeriod"
+description = "Has time period for pulling data for the forecast"
+
+[[types.fields]]
+name = "dataset"
+rust_type = "QueryDataset"
+required = true
+description = "Has definition for data in this forecast"
+
+[[types.fields]]
+name = "includeActualCost"
+type = "boolean"
+description = "a flag which indicates whether actuals cost will be included"
+
+[[types.fields]]
+name = "includeFreshPartialCost"
+type = "boolean"
+description = "a flag which indicates whether fresh partial data will be included"
+
+# ============================================================================
+# Usage Details Types (Microsoft.Consumption)
+# ============================================================================
+
+# --- UsageDetailProperties ---
+[[types]]
+name = "UsageDetailProperties"
+description = "The properties of a legacy usage detail."
+
+[[types.fields]]
+name = "billingPeriodId"
+type = "string"
+description = "The id of the billing period resource that the usage belongs to"
+
+[[types.fields]]
+name = "usageStart"
+type = "string"
+description = "The start of the date time range covered by the usage detail"
+
+[[types.fields]]
+name = "usageEnd"
+type = "string"
+description = "The end of the date time range covered by the usage detail"
+
+[[types.fields]]
+name = "instanceId"
+type = "string"
+description = "The uri of the resource instance that the usage is about"
+
+[[types.fields]]
+name = "instanceName"
+type = "string"
+description = "The name of the resource instance that the usage is about"
+
+[[types.fields]]
+name = "resourceGroup"
+type = "string"
+description = "The resource group name of the usage detail"
+
+[[types.fields]]
+name = "product"
+type = "string"
+description = "The name of the product that the consumption is about"
+
+[[types.fields]]
+name = "meterId"
+type = "string"
+description = "The ID of the meter"
+
+[[types.fields]]
+name = "pretaxCost"
+type = "number"
+description = "The pretax charged amount"
+
+[[types.fields]]
+name = "currency"
+type = "string"
+description = "The ISO currency in which the meter is charged"
+
+[[types.fields]]
+name = "usageQuantity"
+type = "number"
+description = "The quantity of usage"
+
+[[types.fields]]
+name = "unitOfMeasure"
+type = "string"
+description = "The unit of measure"
+
+# --- UsageDetail ---
+[[types]]
+name = "UsageDetail"
+description = "An usage detail resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource id"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "The etag for the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "UsageDetailProperties"
+description = "The properties of the usage detail"
+
+# --- UsageDetailsListResult ---
+[[types]]
+name = "UsageDetailsListResult"
+description = "Result of listing usage details."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<UsageDetail>"
+description = "The list of usage details"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The link to the next page of results"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+# --- Budgets ---
+
+[[operations]]
+name = "ListBudgets"
+rust_name = "list_budgets"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Consumption/budgets"
+response_type = "BudgetListResult"
+description = "Lists all budgets for the subscription."
+
+[[operations]]
+name = "GetBudget"
+rust_name = "get_budget"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Consumption/budgets/{budgetName}"
+response_type = "Budget"
+description = "Gets the budget for the subscription by budget name."
+
+[[operations]]
+name = "CreateBudget"
+rust_name = "create_budget"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Consumption/budgets/{budgetName}"
+request_body_type = "BudgetCreateRequest"
+response_type = "Budget"
+description = "The operation to create or update a budget."
+
+[[operations]]
+name = "DeleteBudget"
+rust_name = "delete_budget"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Consumption/budgets/{budgetName}"
+description = "The operation to delete a budget."
+
+# --- Cost Query ---
+
+[[operations]]
+name = "ListCostByResource"
+rust_name = "list_cost_by_resource"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.CostManagement/query"
+request_body_type = "QueryDefinition"
+response_type = "QueryResult"
+description = "Query the usage data for subscription scope."
+
+# --- Forecast ---
+
+[[operations]]
+name = "GetForecast"
+rust_name = "get_forecast"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.CostManagement/forecast"
+request_body_type = "ForecastDefinition"
+response_type = "QueryResult"
+description = "Lists the forecast charges for subscription scope."
+
+# --- Usage Details ---
+
+[[operations]]
+name = "GetUsageDetails"
+rust_name = "get_usage_details"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Consumption/usageDetails"
+response_type = "UsageDetailsListResult"
+description = "Lists the usage details for the subscription."

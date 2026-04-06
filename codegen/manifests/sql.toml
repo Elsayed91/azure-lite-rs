@@ -1,0 +1,466 @@
+# Azure SQL API manifest
+# ARM REST API version: 2023-08-01-preview
+# Source: https://learn.microsoft.com/en-us/rest/api/sql/
+
+[api]
+name = "sql"
+display_name = "Azure SQL"
+version = "v1"
+api_version = "2023-08-01-preview"
+service_name = "sql"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/sql/"
+
+[api.client]
+accessor_name = "sql"
+client_struct = "SqlClient"
+
+# ============================================================================
+# Server Types
+# ============================================================================
+
+# --- ServerProperties ---
+[[types]]
+name = "ServerProperties"
+description = "The properties of a server."
+
+[[types.fields]]
+name = "administratorLogin"
+type = "string"
+description = "Administrator username for the server"
+
+[[types.fields]]
+name = "fullyQualifiedDomainName"
+type = "string"
+description = "The fully qualified domain name of the server"
+
+[[types.fields]]
+name = "state"
+type = "string"
+description = "The state of the server (Ready, Disabled, etc.)"
+
+[[types.fields]]
+name = "version"
+type = "string"
+description = "The version of the server"
+
+# --- Server ---
+[[types]]
+name = "Server"
+description = "An Azure SQL Database server."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ServerProperties"
+description = "Server resource properties"
+
+# --- ServerListResult ---
+[[types]]
+name = "ServerListResult"
+description = "A list of servers."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Server>"
+description = "Array of results"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to retrieve next page"
+
+# --- ServerCreateOrUpdateProperties ---
+[[types]]
+name = "ServerCreateOrUpdateProperties"
+description = "The properties used to create a new server."
+
+[[types.fields]]
+name = "administratorLogin"
+type = "string"
+required = true
+description = "Administrator username for the server"
+
+[[types.fields]]
+name = "administratorLoginPassword"
+type = "string"
+description = "Administrator login password (required for create)"
+
+[[types.fields]]
+name = "version"
+type = "string"
+description = "The version of the server (e.g. 12.0)"
+
+# --- ServerCreateRequest ---
+[[types]]
+name = "ServerCreateRequest"
+description = "An Azure SQL Database server."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ServerCreateOrUpdateProperties"
+description = "Resource properties"
+
+# ============================================================================
+# Database Types
+# ============================================================================
+
+# --- DatabaseProperties ---
+[[types]]
+name = "DatabaseProperties"
+description = "The database's properties."
+
+[[types.fields]]
+name = "status"
+type = "string"
+description = "The status of the database"
+
+[[types.fields]]
+name = "databaseId"
+type = "string"
+description = "The ID of the database"
+
+[[types.fields]]
+name = "collation"
+type = "string"
+description = "The collation of the database"
+
+[[types.fields]]
+name = "maxSizeBytes"
+type = "int64"
+description = "The max size of the database expressed in bytes"
+
+[[types.fields]]
+name = "requestedServiceObjectiveName"
+type = "string"
+description = "The name of the configured service level objective"
+
+[[types.fields]]
+name = "currentServiceObjectiveName"
+type = "string"
+description = "The current service level objective name"
+
+[[types.fields]]
+name = "defaultSecondaryLocation"
+type = "string"
+description = "The default secondary region for this database"
+
+# --- Database ---
+[[types]]
+name = "Database"
+description = "A database resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "sku"
+rust_type = "DatabaseSku"
+description = "The database SKU"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DatabaseProperties"
+description = "Resource properties"
+
+# --- DatabaseSku ---
+[[types]]
+name = "DatabaseSku"
+description = "An ARM Resource SKU."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The name of the SKU (e.g. Basic, Standard, Premium)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "The tier or edition of the particular SKU"
+
+[[types.fields]]
+name = "capacity"
+type = "integer"
+description = "Capacity of the particular SKU"
+
+# --- DatabaseListResult ---
+[[types]]
+name = "DatabaseListResult"
+description = "A list of databases."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Database>"
+description = "Array of results"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to retrieve next page"
+
+# --- DatabaseCreateOrUpdateProperties ---
+[[types]]
+name = "DatabaseCreateOrUpdateProperties"
+description = "The database's create or update properties."
+
+[[types.fields]]
+name = "collation"
+type = "string"
+description = "The collation of the database"
+
+[[types.fields]]
+name = "maxSizeBytes"
+type = "int64"
+description = "The max size of the database expressed in bytes"
+
+# --- DatabaseCreateRequest ---
+[[types]]
+name = "DatabaseCreateRequest"
+description = "A database resource."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "sku"
+rust_type = "DatabaseSku"
+description = "The database SKU"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "DatabaseCreateOrUpdateProperties"
+description = "Resource properties"
+
+# ============================================================================
+# Firewall Rule Types
+# ============================================================================
+
+# --- FirewallRuleProperties ---
+[[types]]
+name = "FirewallRuleProperties"
+description = "The properties of a server firewall rule."
+
+[[types.fields]]
+name = "startIpAddress"
+type = "string"
+required = true
+description = "The start IP address of the firewall rule"
+
+[[types.fields]]
+name = "endIpAddress"
+type = "string"
+required = true
+description = "The end IP address of the firewall rule"
+
+# --- FirewallRule ---
+[[types]]
+name = "FirewallRule"
+description = "A server firewall rule."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "properties"
+rust_type = "FirewallRuleProperties"
+description = "Resource properties"
+
+# --- FirewallRuleListResult ---
+[[types]]
+name = "FirewallRuleListResult"
+description = "The response to a list firewall rules request."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<FirewallRule>"
+description = "Array of results"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Link to retrieve next page"
+
+# --- FirewallRuleCreateRequest ---
+[[types]]
+name = "FirewallRuleCreateRequest"
+description = "A server firewall rule."
+
+[[types.fields]]
+name = "properties"
+rust_type = "FirewallRuleProperties"
+description = "Resource properties"
+
+# ============================================================================
+# Server Operations
+# ============================================================================
+
+[[operations]]
+name = "ListServers"
+rust_name = "list_servers"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Sql/servers"
+response_type = "ServerListResult"
+description = "Gets a list of all servers in the subscription."
+
+[[operations]]
+name = "GetServer"
+rust_name = "get_server"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}"
+response_type = "Server"
+description = "Gets a server."
+
+[[operations]]
+name = "CreateServer"
+rust_name = "create_server"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}"
+request_body_type = "ServerCreateRequest"
+response_type = "Server"
+description = "Creates or updates a server."
+
+[[operations]]
+name = "DeleteServer"
+rust_name = "delete_server"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}"
+description = "Deletes a server."
+
+# ============================================================================
+# Database Operations
+# ============================================================================
+
+[[operations]]
+name = "ListDatabases"
+rust_name = "list_databases"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases"
+response_type = "DatabaseListResult"
+description = "Gets a list of databases."
+
+[[operations]]
+name = "GetDatabase"
+rust_name = "get_database"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}"
+response_type = "Database"
+description = "Gets a database."
+
+[[operations]]
+name = "CreateDatabase"
+rust_name = "create_database"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}"
+request_body_type = "DatabaseCreateRequest"
+response_type = "Database"
+description = "Creates or updates a database."
+
+[[operations]]
+name = "DeleteDatabase"
+rust_name = "delete_database"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}"
+description = "Deletes a database."
+
+# ============================================================================
+# Firewall Rule Operations
+# ============================================================================
+
+[[operations]]
+name = "ListFirewallRules"
+rust_name = "list_firewall_rules"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/firewallRules"
+response_type = "FirewallRuleListResult"
+description = "Gets a list of firewall rules."
+
+[[operations]]
+name = "CreateFirewallRule"
+rust_name = "create_firewall_rule"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/firewallRules/{firewallRuleName}"
+request_body_type = "FirewallRuleCreateRequest"
+response_type = "FirewallRule"
+description = "Creates or updates a firewall rule."

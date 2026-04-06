@@ -1,0 +1,318 @@
+# Azure Log Analytics API manifest
+# ARM REST API version: 2023-09-01
+# Source: https://learn.microsoft.com/en-us/rest/api/loganalytics/
+
+[api]
+name = "loganalytics"
+display_name = "Azure Log Analytics"
+version = "v1"
+api_version = "2023-09-01"
+service_name = "loganalytics"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/loganalytics/"
+
+[api.client]
+accessor_name = "log_analytics"
+client_struct = "LogAnalyticsClient"
+
+# ============================================================================
+# Workspace Types (Microsoft.OperationalInsights)
+# ============================================================================
+
+# --- WorkspaceSku ---
+[[types]]
+name = "WorkspaceSku"
+description = "The SKU (pricing tier) of a Log Analytics workspace."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The name of the SKU (e.g., PerGB2018, Free, Standard, Premium)"
+
+# --- WorkspaceProperties ---
+[[types]]
+name = "WorkspaceProperties"
+description = "Workspace properties."
+
+[[types.fields]]
+name = "retentionInDays"
+type = "integer"
+description = "The workspace data retention in days"
+
+[[types.fields]]
+name = "sku"
+rust_type = "WorkspaceSku"
+description = "The SKU of the workspace"
+
+[[types.fields]]
+name = "publicNetworkAccessForIngestion"
+type = "string"
+description = "The network access type for accessing Log Analytics ingestion (Enabled/Disabled)"
+
+[[types.fields]]
+name = "publicNetworkAccessForQuery"
+type = "string"
+description = "The network access type for accessing Log Analytics query (Enabled/Disabled)"
+
+[[types.fields]]
+name = "customerId"
+type = "string"
+description = "This is a read-only property. Represents the ID associated with the workspace"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the workspace"
+
+# --- Workspace ---
+[[types]]
+name = "Workspace"
+description = "The top level Workspace resource container."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Azure resource identifier"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Azure resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Azure resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "WorkspaceProperties"
+description = "Workspace properties"
+
+# --- WorkspaceListResult ---
+[[types]]
+name = "WorkspaceListResult"
+description = "The list workspaces operation response."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Workspace>"
+description = "A list of workspaces"
+
+# --- WorkspaceCreateRequest ---
+[[types]]
+name = "WorkspaceCreateRequest"
+description = "The request body for creating or updating a Log Analytics workspace."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "WorkspaceProperties"
+description = "Workspace properties"
+
+# ============================================================================
+# Query Types (Microsoft.OperationalInsights)
+# ============================================================================
+
+# --- LogQueryBody ---
+[[types]]
+name = "LogQueryBody"
+description = "The request body for a Log Analytics query."
+
+[[types.fields]]
+name = "query"
+type = "string"
+required = true
+description = "The KQL query to execute"
+
+[[types.fields]]
+name = "timespan"
+type = "string"
+description = "Optional ISO 8601 duration or time range for the query"
+
+# --- LogQueryColumn ---
+[[types]]
+name = "LogQueryColumn"
+description = "A column in a Log Analytics query result table."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The column name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The column data type"
+
+# --- LogQueryTable ---
+[[types]]
+name = "LogQueryTable"
+description = "A table in the Log Analytics query result."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the table (usually PrimaryResult)"
+
+[[types.fields]]
+name = "columns"
+rust_type = "Vec<LogQueryColumn>"
+description = "The column schema for this table"
+
+[[types.fields]]
+name = "rows"
+rust_type = "Vec<serde_json::Value>"
+description = "The result rows (each row is a JSON array of values)"
+
+# --- LogQueryResult ---
+[[types]]
+name = "LogQueryResult"
+description = "The response to a Log Analytics query."
+
+[[types.fields]]
+name = "tables"
+rust_type = "Vec<LogQueryTable>"
+description = "The list of tables, columns and rows"
+
+# ============================================================================
+# Saved Search Types (Microsoft.OperationalInsights)
+# ============================================================================
+
+# --- SavedSearchProperties ---
+[[types]]
+name = "SavedSearchProperties"
+description = "Value object for saved search results."
+
+[[types.fields]]
+name = "displayName"
+type = "string"
+description = "The display name of the saved search"
+
+[[types.fields]]
+name = "category"
+type = "string"
+description = "The category of the saved search"
+
+[[types.fields]]
+name = "query"
+type = "string"
+description = "The query expression for the saved search"
+
+[[types.fields]]
+name = "version"
+type = "integer"
+description = "The version number of the query"
+
+# --- SavedSearch ---
+[[types]]
+name = "SavedSearch"
+description = "Value object for saved search results."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The resource ID of the saved search"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the saved search resource"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "The ETag of the saved search"
+
+[[types.fields]]
+name = "properties"
+rust_type = "SavedSearchProperties"
+description = "The properties of the saved search"
+
+# --- SavedSearchListResult ---
+[[types]]
+name = "SavedSearchListResult"
+description = "The saved search list operation response."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<SavedSearch>"
+description = "The array of result values"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListWorkspaces"
+rust_name = "list_workspaces"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/workspaces"
+response_type = "WorkspaceListResult"
+description = "Gets the workspaces in a subscription."
+
+[[operations]]
+name = "GetWorkspace"
+rust_name = "get_workspace"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}"
+response_type = "Workspace"
+description = "Gets a workspace instance."
+
+[[operations]]
+name = "CreateWorkspace"
+rust_name = "create_workspace"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}"
+request_body_type = "WorkspaceCreateRequest"
+response_type = "Workspace"
+description = "Create or update a workspace."
+
+[[operations]]
+name = "DeleteWorkspace"
+rust_name = "delete_workspace"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}"
+description = "Deletes a workspace resource instance."
+
+[[operations]]
+name = "QueryLogs"
+rust_name = "query_logs"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/query"
+request_body_type = "LogQueryBody"
+response_type = "LogQueryResult"
+description = "Execute a KQL query against a Log Analytics workspace."
+
+[[operations]]
+name = "ListSavedSearches"
+rust_name = "list_saved_searches"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/savedSearches"
+response_type = "SavedSearchListResult"
+description = "Gets the saved searches for a given Log Analytics workspace."

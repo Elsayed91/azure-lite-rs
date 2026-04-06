@@ -1,0 +1,259 @@
+# Azure Container Registry (ACR) API manifest
+# ARM REST API version: 2023-07-01
+# Source: https://learn.microsoft.com/en-us/rest/api/containerregistry/
+
+[api]
+name = "acr"
+display_name = "Azure Container Registry"
+version = "v1"
+api_version = "2023-07-01"
+service_name = "acr"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/containerregistry/"
+
+[api.client]
+accessor_name = "acr"
+client_struct = "AcrClient"
+
+# ============================================================================
+# ARM Registry Types
+# ============================================================================
+
+# --- RegistrySku ---
+[[types]]
+name = "RegistrySku"
+description = "The SKU of a container registry."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The SKU name of the container registry (Basic, Standard, Premium)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "The SKU tier based on the SKU name (read-only)"
+
+# --- RegistryProperties ---
+[[types]]
+name = "RegistryProperties"
+description = "The properties of a container registry."
+
+[[types.fields]]
+name = "loginServer"
+type = "string"
+description = "The URL that can be used to log into the container registry"
+
+[[types.fields]]
+name = "creationDate"
+type = "string"
+description = "The creation date of the container registry (ISO 8601)"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state of the container registry (Succeeded, Failed, Creating, etc.)"
+
+[[types.fields]]
+name = "adminUserEnabled"
+type = "boolean"
+description = "Whether the admin user is enabled"
+
+# --- Registry ---
+[[types]]
+name = "Registry"
+description = "An Azure container registry."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "RegistrySku"
+description = "The SKU of the container registry"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RegistryProperties"
+description = "The properties of the container registry"
+
+# --- RegistryListResult ---
+[[types]]
+name = "RegistryListResult"
+description = "The result of a request to list container registries."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Registry>"
+description = "The list of container registries"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The URI that can be used to request the next list of container registries"
+
+# --- RegistryCreateProperties ---
+[[types]]
+name = "RegistryCreateProperties"
+description = "Properties for creating a container registry."
+
+[[types.fields]]
+name = "adminUserEnabled"
+type = "boolean"
+description = "Whether the admin user is enabled"
+
+# --- RegistryCreateRequest ---
+[[types]]
+name = "RegistryCreateRequest"
+description = "Request body for creating or updating a container registry."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "sku"
+rust_type = "RegistrySku"
+description = "The SKU of the container registry"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RegistryCreateProperties"
+description = "The properties of the container registry"
+
+# ============================================================================
+# ACR Data Plane Types (used by hand-coded repository/tag methods)
+# ============================================================================
+
+# --- RepositoryChangeableAttributes ---
+[[types]]
+name = "RepositoryChangeableAttributes"
+description = "Changeable attributes for a repository."
+
+[[types.fields]]
+name = "deleteEnabled"
+type = "boolean"
+description = "Whether delete is enabled"
+
+[[types.fields]]
+name = "writeEnabled"
+type = "boolean"
+description = "Whether write is enabled"
+
+[[types.fields]]
+name = "listEnabled"
+type = "boolean"
+description = "Whether list is enabled"
+
+[[types.fields]]
+name = "readEnabled"
+type = "boolean"
+description = "Whether read is enabled"
+
+# --- Repository ---
+[[types]]
+name = "Repository"
+description = "ACR repository information."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the repository"
+
+[[types.fields]]
+name = "changeableAttributes"
+rust_type = "RepositoryChangeableAttributes"
+description = "Modifiable attributes of the repository"
+
+# --- CatalogResult ---
+[[types]]
+name = "CatalogResult"
+description = "OCI distribution catalog result (list of repository names)."
+
+[[types.fields]]
+name = "repositories"
+rust_type = "Vec<String>"
+description = "List of repository names"
+
+# --- TagListResult ---
+[[types]]
+name = "TagListResult"
+description = "OCI distribution tag list result."
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Repository name"
+
+[[types.fields]]
+name = "tags"
+rust_type = "Vec<String>"
+description = "List of tag names"
+
+# ============================================================================
+# Registry Operations (ARM management plane)
+# ============================================================================
+
+[[operations]]
+name = "ListRegistries"
+rust_name = "list_registries"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries"
+response_type = "RegistryListResult"
+description = "Lists all the container registries under the specified subscription."
+
+[[operations]]
+name = "GetRegistry"
+rust_name = "get_registry"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}"
+response_type = "Registry"
+description = "Gets the properties of the specified container registry."
+
+[[operations]]
+name = "CreateRegistry"
+rust_name = "create_registry"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}"
+request_body_type = "RegistryCreateRequest"
+response_type = "Registry"
+description = "Creates or updates a container registry."
+
+[[operations]]
+name = "DeleteRegistry"
+rust_name = "delete_registry"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}"
+description = "Deletes a container registry."

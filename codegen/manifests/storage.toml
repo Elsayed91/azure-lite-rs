@@ -1,0 +1,428 @@
+# Azure Storage Resource Provider manifest
+# ARM REST API version: 2023-05-01
+# Source: https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts
+
+[api]
+name = "storage"
+display_name = "Azure Storage"
+version = "v1"
+api_version = "2023-05-01"
+service_name = "storage"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/storagerp/storage-accounts"
+
+[api.client]
+accessor_name = "storage"
+client_struct = "StorageClient"
+
+# ============================================================================
+# Types
+# ============================================================================
+
+# --- StorageAccountSku ---
+[[types]]
+name = "StorageAccountSku"
+description = "The SKU of a storage account."
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "SKU name (e.g. Standard_LRS, Standard_GRS, Premium_LRS)"
+
+[[types.fields]]
+name = "tier"
+type = "string"
+description = "SKU tier (Standard or Premium)"
+
+# --- StorageAccountProperties ---
+[[types]]
+name = "StorageAccountProperties"
+description = "Properties of a storage account."
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning state of the storage account (e.g. Succeeded)"
+
+[[types.fields]]
+name = "primaryLocation"
+type = "string"
+description = "The primary region for the storage account"
+
+[[types.fields]]
+name = "secondaryLocation"
+type = "string"
+description = "The secondary region for geo-redundant storage"
+
+[[types.fields]]
+name = "statusOfPrimary"
+type = "string"
+description = "Status of the primary endpoint (available or unavailable)"
+
+[[types.fields]]
+name = "statusOfSecondary"
+type = "string"
+description = "Status of the secondary endpoint (available or unavailable)"
+
+[[types.fields]]
+name = "creationTime"
+type = "string"
+description = "Timestamp when the storage account was created"
+
+[[types.fields]]
+name = "primaryEndpoints"
+type = "object"
+description = "Primary service endpoints for the storage account"
+
+[[types.fields]]
+name = "supportsHttpsTrafficOnly"
+type = "boolean"
+description = "Whether only HTTPS traffic is permitted"
+
+[[types.fields]]
+name = "isHnsEnabled"
+type = "boolean"
+description = "Whether hierarchical namespace is enabled"
+
+[[types.fields]]
+name = "minimumTlsVersion"
+type = "string"
+description = "Minimum TLS version (TLS1_0, TLS1_1, TLS1_2)"
+
+[[types.fields]]
+name = "allowBlobPublicAccess"
+type = "boolean"
+description = "Whether blob public access is allowed"
+
+# --- StorageAccount (top-level resource) ---
+[[types]]
+name = "StorageAccount"
+description = "An Azure storage account."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+description = "Resource type (Microsoft.Storage/storageAccounts)"
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Azure region where the storage account is located"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+description = "Kind of storage account (Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage)"
+
+[[types.fields]]
+name = "sku"
+type = "object"
+description = "SKU of the storage account"
+
+[[types.fields]]
+name = "tags"
+type = "object"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+type = "object"
+description = "Storage account properties"
+
+# --- StorageAccountListResult ---
+[[types]]
+name = "StorageAccountListResult"
+description = "Response from list storage accounts operations."
+
+[[types.fields]]
+name = "value"
+type = "array"
+description = "List of storage accounts"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "URL to retrieve next page of results"
+
+# --- StorageAccountCreateRequest ---
+[[types]]
+name = "StorageAccountCreateRequest"
+description = "Request body for creating a storage account."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Azure region where the storage account should be created"
+
+[[types.fields]]
+name = "kind"
+type = "string"
+required = true
+description = "Kind of storage account (StorageV2, BlobStorage, etc.)"
+
+[[types.fields]]
+name = "sku"
+type = "object"
+required = true
+description = "SKU for the storage account"
+
+[[types.fields]]
+name = "tags"
+type = "object"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+type = "object"
+description = "Additional storage account properties"
+
+# --- StorageAccountKey ---
+[[types]]
+name = "StorageAccountKey"
+description = "An access key for a storage account."
+
+[[types.fields]]
+name = "keyName"
+type = "string"
+description = "Name of the key (key1, key2)"
+
+[[types.fields]]
+name = "value"
+type = "string"
+description = "Base64-encoded key value"
+
+[[types.fields]]
+name = "permissions"
+type = "string"
+description = "Key permissions (Full or Read)"
+
+[[types.fields]]
+name = "creationTime"
+type = "string"
+description = "Timestamp when the key was created"
+
+# --- StorageAccountListKeysResult ---
+[[types]]
+name = "StorageAccountListKeysResult"
+description = "Response from the ListKeys and RegenerateKey operations."
+
+[[types.fields]]
+name = "keys"
+type = "array"
+description = "List of storage account access keys"
+
+# --- StorageAccountRegenerateKeyRequest ---
+[[types]]
+name = "StorageAccountRegenerateKeyRequest"
+description = "Request body for regenerating a storage account key."
+
+[[types.fields]]
+name = "keyName"
+type = "string"
+required = true
+description = "Name of the key to regenerate (key1 or key2)"
+
+# --- StorageAccountUpdateProperties ---
+[[types]]
+name = "StorageAccountUpdateProperties"
+description = "Properties to update on a storage account (partial PATCH — only set fields are sent)."
+
+[[types.fields]]
+name = "allowBlobPublicAccess"
+type = "boolean"
+description = "Whether blob public access is allowed"
+
+[[types.fields]]
+name = "supportsHttpsTrafficOnly"
+type = "boolean"
+description = "Whether only HTTPS traffic is permitted"
+
+[[types.fields]]
+name = "minimumTlsVersion"
+type = "string"
+description = "Minimum TLS version (TLS1_0, TLS1_1, TLS1_2)"
+
+# --- StorageAccountUpdateRequest ---
+[[types]]
+name = "StorageAccountUpdateRequest"
+description = "Request body for updating a storage account (PATCH — partial update, ARM merges with existing state)."
+
+[[types.fields]]
+name = "properties"
+rust_type = "StorageAccountUpdateProperties"
+description = "Properties to update (partial — only set fields are sent)"
+
+[[types.fields]]
+name = "tags"
+type = "object"
+description = "Tags to update"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListStorageAccounts"
+rust_name = "list_storage_accounts"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts"
+response_type = "StorageAccountListResult"
+description = "Lists all storage accounts in a subscription"
+
+[[operations]]
+name = "ListStorageAccountsByResourceGroup"
+rust_name = "list_storage_accounts_by_resource_group"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts"
+response_type = "StorageAccountListResult"
+description = "Lists all storage accounts in a resource group"
+
+[[operations]]
+name = "GetStorageAccount"
+rust_name = "get_storage_account"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}"
+response_type = "StorageAccount"
+description = "Returns the properties of a storage account"
+
+[[operations]]
+name = "CreateStorageAccount"
+rust_name = "create_storage_account"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}"
+request_body_type = "StorageAccountCreateRequest"
+response_type = "StorageAccount"
+description = "Creates a new storage account"
+
+[[operations]]
+name = "DeleteStorageAccount"
+rust_name = "delete_storage_account"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}"
+response_type = "StorageAccount"
+description = "Deletes a storage account"
+
+[[operations]]
+name = "ListKeys"
+rust_name = "list_keys"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/listKeys"
+response_type = "StorageAccountListKeysResult"
+description = "Lists the access keys for a storage account"
+
+[[operations]]
+name = "RegenerateKey"
+rust_name = "regenerate_key"
+method = "POST"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/regenerateKey"
+request_body_type = "StorageAccountRegenerateKeyRequest"
+response_type = "StorageAccountListKeysResult"
+description = "Regenerates one of the access keys for a storage account"
+
+[[operations]]
+name = "PatchStorageAccount"
+rust_name = "patch_storage_account"
+method = "PATCH"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}"
+request_body_type = "StorageAccountUpdateRequest"
+response_type = "StorageAccount"
+description = "Updates properties of an existing storage account (partial PATCH — only provided fields are changed)"
+
+# --- ManagementPolicyRule ---
+[[types]]
+name = "ManagementPolicyRule"
+description = "A rule in a blob lifecycle management policy."
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+required = true
+description = "Whether the rule is enabled"
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The name of the rule"
+
+[[types.fields]]
+name = "type"
+type = "string"
+description = "The type of the rule (e.g. Lifecycle)"
+
+# --- ManagementPolicySchema ---
+[[types]]
+name = "ManagementPolicySchema"
+description = "The Storage Account ManagementPolicy schema containing lifecycle rules."
+
+[[types.fields]]
+name = "rules"
+rust_type = "Vec<ManagementPolicyRule>"
+required = true
+description = "The list of lifecycle management policy rules"
+
+# --- ManagementPolicyProperties ---
+[[types]]
+name = "ManagementPolicyProperties"
+description = "Properties of a blob lifecycle management policy."
+
+[[types.fields]]
+name = "lastModifiedTime"
+type = "string"
+description = "The date and time the policy was last modified"
+
+[[types.fields]]
+name = "policy"
+rust_type = "ManagementPolicySchema"
+description = "The lifecycle management policy schema"
+
+# --- ManagementPolicy ---
+[[types]]
+name = "ManagementPolicy"
+description = "The Get Storage Account ManagementPolicies operation response."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Fully qualified resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the resource"
+
+[[types.fields]]
+name = "type"
+type = "string"
+description = "The type of the resource"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ManagementPolicyProperties"
+description = "The management policy properties"
+
+# ============================================================================
+# Operations (continued)
+# ============================================================================
+
+[[operations]]
+name = "GetManagementPolicy"
+rust_name = "get_management_policy"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/managementPolicies/default"
+response_type = "ManagementPolicy"
+description = "Gets the blob lifecycle management policy for a storage account"

@@ -1,0 +1,396 @@
+# Azure DNS API manifest
+# ARM REST API version: 2018-05-01
+# Source: https://learn.microsoft.com/en-us/rest/api/dns/
+
+[api]
+name = "dns"
+display_name = "Azure DNS"
+version = "v1"
+api_version = "2018-05-01"
+service_name = "dns"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/dns/"
+
+[api.client]
+accessor_name = "dns"
+client_struct = "DnsClient"
+
+# ============================================================================
+# DNS Zone Types
+# ============================================================================
+
+# --- ZoneProperties ---
+[[types]]
+name = "ZoneProperties"
+description = "Represents the properties of the zone."
+
+[[types.fields]]
+name = "zoneType"
+type = "string"
+description = "The type of this DNS zone (Public or Private)"
+
+[[types.fields]]
+name = "numberOfRecordSets"
+type = "int64"
+description = "The current number of record sets in this DNS zone"
+
+[[types.fields]]
+name = "maxNumberOfRecordSets"
+type = "int64"
+description = "The maximum number of record sets that can be created in this DNS zone"
+
+[[types.fields]]
+name = "maxNumberOfRecordsPerRecordSet"
+type = "int64"
+description = "The maximum number of records per record set that can be created in this DNS zone"
+
+[[types.fields]]
+name = "nameServers"
+rust_type = "Vec<String>"
+description = "The name servers for this DNS zone"
+
+# --- Zone (top-level DNS zone resource) ---
+[[types]]
+name = "Zone"
+description = "Describes a DNS zone."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Resource ID"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "The etag of the zone"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ZoneProperties"
+description = "The properties of the zone"
+
+# --- ZoneListResult ---
+[[types]]
+name = "ZoneListResult"
+description = "The response to a Zone List or ListAll operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Zone>"
+description = "Information about a DNS zone"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The continuation token for the next page of results"
+
+# --- ZoneCreateRequest ---
+[[types]]
+name = "ZoneCreateRequest"
+description = "Request body for creating or updating a DNS zone."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "ZoneProperties"
+description = "The properties of the zone"
+
+# --- ARecord ---
+[[types]]
+name = "ARecord"
+description = "An A record."
+
+[[types.fields]]
+name = "ipv4Address"
+type = "string"
+description = "The IPv4 address of this A record"
+
+# --- AaaaRecord ---
+[[types]]
+name = "AaaaRecord"
+description = "An AAAA record."
+
+[[types.fields]]
+name = "ipv6Address"
+type = "string"
+description = "The IPv6 address of this AAAA record"
+
+# --- CnameRecord ---
+[[types]]
+name = "CnameRecord"
+description = "A CNAME record."
+
+[[types.fields]]
+name = "cname"
+type = "string"
+description = "The canonical name for this CNAME record"
+
+# --- MxRecord ---
+[[types]]
+name = "MxRecord"
+description = "An MX record."
+
+[[types.fields]]
+name = "preference"
+type = "integer"
+description = "The preference value for this MX record"
+
+[[types.fields]]
+name = "exchange"
+type = "string"
+description = "The domain name of the mail host for this MX record"
+
+# --- TxtRecord ---
+[[types]]
+name = "TxtRecord"
+description = "A TXT record."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<String>"
+description = "The text value of this TXT record"
+
+# --- NsRecord ---
+[[types]]
+name = "NsRecord"
+description = "An NS record."
+
+[[types.fields]]
+name = "nsdname"
+type = "string"
+description = "The name server name for this NS record"
+
+# --- RecordSetProperties ---
+[[types]]
+name = "RecordSetProperties"
+description = "Represents the properties of the records in the RecordSet."
+
+[[types.fields]]
+name = "metadata"
+rust_type = "HashMap<String, String>"
+description = "The metadata attached to the record set"
+
+[[types.fields]]
+name = "ttl"
+type = "int64"
+serde_rename = "TTL"
+description = "The TTL (time-to-live) of the records in the record set"
+
+[[types.fields]]
+name = "fqdn"
+type = "string"
+description = "Fully qualified domain name of the record set"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "Provisioning State of the record set"
+
+[[types.fields]]
+name = "ARecords"
+rust_type = "Vec<ARecord>"
+serde_rename = "ARecords"
+description = "The list of A records in the record set"
+
+[[types.fields]]
+name = "AAAARecords"
+rust_type = "Vec<AaaaRecord>"
+serde_rename = "AAAARecords"
+description = "The list of AAAA records in the record set"
+
+[[types.fields]]
+name = "CNAMERecord"
+rust_type = "CnameRecord"
+serde_rename = "CNAMERecord"
+description = "The CNAME record in the record set"
+
+[[types.fields]]
+name = "MXRecords"
+rust_type = "Vec<MxRecord>"
+serde_rename = "MXRecords"
+description = "The list of MX records in the record set"
+
+[[types.fields]]
+name = "TXTRecords"
+rust_type = "Vec<TxtRecord>"
+serde_rename = "TXTRecords"
+description = "The list of TXT records in the record set"
+
+[[types.fields]]
+name = "NSRecords"
+rust_type = "Vec<NsRecord>"
+serde_rename = "NSRecords"
+description = "The list of NS records in the record set"
+
+# --- RecordSet ---
+[[types]]
+name = "RecordSet"
+description = "Describes a DNS record set (a collection of DNS records with the same name and type)."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The ID of the record set"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name of the record set, relative to the name of the zone"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "The type of the record set"
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "The etag of the record set"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RecordSetProperties"
+description = "The properties of the record set"
+
+# --- RecordSetListResult ---
+[[types]]
+name = "RecordSetListResult"
+description = "The response to a record set List operation."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<RecordSet>"
+description = "Information about a record set within a DNS zone"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "The continuation token for the next page of results"
+
+# --- RecordSetCreateRequest ---
+[[types]]
+name = "RecordSetCreateRequest"
+description = "Request body for creating or updating a DNS record set."
+
+[[types.fields]]
+name = "etag"
+type = "string"
+description = "The etag of the record set"
+
+[[types.fields]]
+name = "properties"
+rust_type = "RecordSetProperties"
+description = "The properties of the record set"
+
+# ============================================================================
+# DNS Zone Operations
+# ============================================================================
+
+[[operations]]
+name = "ListDnsZones"
+rust_name = "list_dns_zones"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones"
+response_type = "ZoneListResult"
+description = "Lists the DNS zones within a resource group."
+
+[[operations]]
+name = "ListDnsZonesAll"
+rust_name = "list_dns_zones_all"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/Microsoft.Network/dnsZones"
+response_type = "ZoneListResult"
+description = "Lists the DNS zones in all resource groups in a subscription."
+
+[[operations]]
+name = "GetDnsZone"
+rust_name = "get_dns_zone"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}"
+response_type = "Zone"
+description = "Gets a DNS zone."
+
+[[operations]]
+name = "CreateDnsZone"
+rust_name = "create_dns_zone"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}"
+request_body_type = "ZoneCreateRequest"
+response_type = "Zone"
+description = "Creates or updates a DNS zone."
+
+[[operations]]
+name = "DeleteDnsZone"
+rust_name = "delete_dns_zone"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}"
+description = "Deletes a DNS zone. WARNING: All DNS records in the zone will also be deleted."
+
+# ============================================================================
+# DNS Record Set Operations
+# ============================================================================
+
+[[operations]]
+name = "ListRecordSets"
+rust_name = "list_record_sets"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/recordsets"
+response_type = "RecordSetListResult"
+description = "Lists all record sets in a DNS zone."
+
+[[operations]]
+name = "GetRecordSet"
+rust_name = "get_record_set"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}"
+response_type = "RecordSet"
+description = "Gets a record set."
+
+[[operations]]
+name = "CreateRecordSet"
+rust_name = "create_record_set"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}"
+request_body_type = "RecordSetCreateRequest"
+response_type = "RecordSet"
+description = "Creates or updates a record set within a DNS zone."
+
+[[operations]]
+name = "DeleteRecordSet"
+rust_name = "delete_record_set"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}"
+description = "Deletes a record set from a DNS zone."

@@ -1,0 +1,468 @@
+# Azure Monitor API manifest
+# ARM REST API version: 2023-10-01 (metrics), 2022-06-01 (alert rules)
+# Activity logs: 2015-04-01
+# Source: https://learn.microsoft.com/en-us/rest/api/monitor/
+
+[api]
+name = "monitor"
+display_name = "Azure Monitor"
+version = "v1"
+api_version = "2023-10-01"
+service_name = "monitor"
+wire_format = "azure_rest_json"
+base_url = "https://management.azure.com"
+doc_url = "https://learn.microsoft.com/en-us/rest/api/monitor/"
+
+[api.client]
+accessor_name = "monitor"
+client_struct = "MonitorClient"
+
+# ============================================================================
+# Metric Types
+# ============================================================================
+
+# --- MetricUnit ---
+# Represented as string; avoid enum for forward-compat.
+
+# --- MetricAvailability ---
+[[types]]
+name = "MetricAvailability"
+description = "Metric availability specifies the time grain."
+
+[[types.fields]]
+name = "timeGrain"
+type = "string"
+description = "The time grain specifies the aggregation interval for the metric"
+
+[[types.fields]]
+name = "retention"
+type = "string"
+description = "The retention period for the metric at the specified timegrain"
+
+# --- MetricDefinition ---
+[[types]]
+name = "MetricDefinition"
+description = "Metric definition class specifies the metadata for a metric."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The resource identifier of the metric definition"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "The name and the display name of the metric"
+
+[[types.fields]]
+name = "namespace"
+type = "string"
+description = "The namespace the metric belongs to"
+
+[[types.fields]]
+name = "unit"
+type = "string"
+description = "The unit of the metric"
+
+[[types.fields]]
+name = "primaryAggregationType"
+type = "string"
+description = "The primary aggregation type (None, Average, Count, Minimum, Maximum, Total)"
+
+# --- MetricDefinitionCollection ---
+[[types]]
+name = "MetricDefinitionCollection"
+description = "Represents collection of metric definitions."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<MetricDefinition>"
+required = true
+description = "The values for the metric definitions"
+
+# --- MetricValue ---
+[[types]]
+name = "MetricValue"
+description = "Represents a metric value."
+
+[[types.fields]]
+name = "timeStamp"
+type = "datetime"
+required = true
+description = "The timestamp for the metric value"
+
+[[types.fields]]
+name = "average"
+type = "number"
+description = "The average value in the time range"
+
+[[types.fields]]
+name = "minimum"
+type = "number"
+description = "The minimum value in the time range"
+
+[[types.fields]]
+name = "maximum"
+type = "number"
+description = "The maximum value in the time range"
+
+[[types.fields]]
+name = "total"
+type = "number"
+description = "The sum of all values in the time range"
+
+[[types.fields]]
+name = "count"
+type = "number"
+description = "The number of samples in the time range"
+
+# --- TimeSeriesElement ---
+[[types]]
+name = "TimeSeriesElement"
+description = "A time series result for a metric."
+
+[[types.fields]]
+name = "data"
+rust_type = "Vec<MetricValue>"
+description = "An array of data points representing the metric values"
+
+# --- Metric ---
+[[types]]
+name = "Metric"
+description = "The result data of a query."
+
+[[types.fields]]
+name = "id"
+type = "string"
+required = true
+description = "The metric Id"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+required = true
+description = "The resource type of the metric resource"
+
+[[types.fields]]
+name = "name"
+type = "string"
+required = true
+description = "The name and the display name of the metric"
+
+[[types.fields]]
+name = "unit"
+type = "string"
+required = true
+description = "The unit of the metric"
+
+[[types.fields]]
+name = "timeseries"
+rust_type = "Vec<TimeSeriesElement>"
+description = "The time series returned when a data query is performed"
+
+# --- Response ---
+[[types]]
+name = "MetricsResponse"
+description = "The response to a metrics query."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<Metric>"
+required = true
+description = "The value of the collection"
+
+[[types.fields]]
+name = "cost"
+type = "integer"
+description = "The integer value representing the relative cost of the query"
+
+[[types.fields]]
+name = "timespan"
+type = "string"
+description = "The timespan for which the data was retrieved"
+
+[[types.fields]]
+name = "interval"
+type = "string"
+description = "The interval (window size) for which the metric data was returned"
+
+[[types.fields]]
+name = "namespace"
+type = "string"
+description = "The namespace of the metrics been queried"
+
+# ============================================================================
+# Alert Rule Types
+# ============================================================================
+
+# --- MetricAlertCriteria (base) --- use generic object
+# For simplicity, we represent criteria as a flexible object
+
+# --- MetricAlertProperties ---
+[[types]]
+name = "MetricAlertProperties"
+description = "An alert rule."
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "The description of the alert rule"
+
+[[types.fields]]
+name = "severity"
+type = "integer"
+description = "Alert severity (0-4, where 0 is critical)"
+
+[[types.fields]]
+name = "enabled"
+type = "boolean"
+description = "Whether the alert rule is enabled"
+
+[[types.fields]]
+name = "evaluationFrequency"
+type = "string"
+description = "How often the alert rule is evaluated in ISO 8601 duration format"
+
+[[types.fields]]
+name = "windowSize"
+type = "string"
+description = "The period of time in ISO 8601 duration format used to monitor alert activity"
+
+[[types.fields]]
+name = "provisioningState"
+type = "string"
+description = "The provisioning state"
+
+[[types.fields]]
+name = "targetResourceType"
+type = "string"
+description = "The resource type of the target resource(s) on which the alert is created/updated"
+
+[[types.fields]]
+name = "targetResourceRegion"
+type = "string"
+description = "The region of the target resource(s) on which the alert is created/updated"
+
+# --- MetricAlertResource ---
+[[types]]
+name = "MetricAlertResource"
+description = "The metric alert resource."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "Azure resource Id"
+
+[[types.fields]]
+name = "name"
+type = "string"
+description = "Azure resource name"
+
+[[types.fields]]
+name = "type"
+type = "string"
+serde_rename = "type"
+description = "Azure resource type"
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "MetricAlertProperties"
+description = "The alert rule properties"
+
+# --- MetricAlertResourceCollection ---
+[[types]]
+name = "MetricAlertResourceCollection"
+description = "Represents a collection of alert rule resources."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<MetricAlertResource>"
+description = "The values for the alert rule resources"
+
+# --- MetricAlertResourcePatch ---
+[[types]]
+name = "MetricAlertResourcePatch"
+description = "The metric alert resource for patch operations."
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "MetricAlertProperties"
+description = "The alert rule properties for an update operation"
+
+# --- MetricAlertCreateRequest ---
+[[types]]
+name = "MetricAlertCreateRequest"
+description = "The metric alert resource."
+
+[[types.fields]]
+name = "location"
+type = "string"
+required = true
+description = "Resource location"
+
+[[types.fields]]
+name = "tags"
+rust_type = "HashMap<String, String>"
+description = "Resource tags"
+
+[[types.fields]]
+name = "properties"
+rust_type = "MetricAlertProperties"
+description = "The alert rule properties of the resource"
+
+# ============================================================================
+# Activity Log Types
+# ============================================================================
+
+# --- EventData ---
+[[types]]
+name = "EventData"
+description = "The Azure event log entries are of type EventData."
+
+[[types.fields]]
+name = "id"
+type = "string"
+description = "The Id of this event as required by ARM for RBAC"
+
+[[types.fields]]
+name = "eventTimestamp"
+type = "datetime"
+description = "The timestamp of when the event was generated by the Azure service"
+
+[[types.fields]]
+name = "operationName"
+type = "string"
+description = "The operation name"
+
+[[types.fields]]
+name = "resourceGroupName"
+type = "string"
+description = "The Resource Group name"
+
+[[types.fields]]
+name = "resourceType"
+type = "string"
+description = "The resource type"
+
+[[types.fields]]
+name = "resourceId"
+type = "string"
+description = "The resource URI that has generated the event"
+
+[[types.fields]]
+name = "status"
+type = "string"
+description = "A string describing the status of the operation"
+
+[[types.fields]]
+name = "subStatus"
+type = "string"
+description = "The event sub status"
+
+[[types.fields]]
+name = "level"
+type = "string"
+description = "The event level (Critical, Error, Warning, Informational, Verbose)"
+
+[[types.fields]]
+name = "caller"
+type = "string"
+description = "The email address of the user who performed the operation"
+
+[[types.fields]]
+name = "description"
+type = "string"
+description = "The description of the event"
+
+# --- EventDataCollection ---
+[[types]]
+name = "EventDataCollection"
+description = "Represents collection of events."
+
+[[types.fields]]
+name = "value"
+rust_type = "Vec<EventData>"
+required = true
+description = "This lists the events"
+
+[[types.fields]]
+name = "nextLink"
+type = "string"
+description = "Provides the link to retrieve the next set of events"
+
+# ============================================================================
+# Operations
+# ============================================================================
+
+[[operations]]
+name = "ListMetricDefinitions"
+rust_name = "list_metric_definitions"
+method = "GET"
+url_template = "/{resourceUri}/providers/microsoft.insights/metricDefinitions"
+response_type = "MetricDefinitionCollection"
+description = "Lists the metric definitions for the resource."
+
+[[operations]]
+name = "GetMetrics"
+rust_name = "get_metrics"
+method = "GET"
+url_template = "/{resourceUri}/providers/microsoft.insights/metrics"
+response_type = "MetricsResponse"
+description = "Lists the metric values for a resource."
+
+[[operations]]
+name = "ListAlertRules"
+rust_name = "list_alert_rules"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts"
+response_type = "MetricAlertResourceCollection"
+description = "Retrieve alert rule definitions in a resource group."
+
+[[operations]]
+name = "GetAlertRule"
+rust_name = "get_alert_rule"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}"
+response_type = "MetricAlertResource"
+description = "Retrieve an alert rule definition."
+
+[[operations]]
+name = "CreateAlertRule"
+rust_name = "create_alert_rule"
+method = "PUT"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}"
+request_body_type = "MetricAlertCreateRequest"
+response_type = "MetricAlertResource"
+description = "Create or update an alert rule definition."
+
+[[operations]]
+name = "DeleteAlertRule"
+rust_name = "delete_alert_rule"
+method = "DELETE"
+url_template = "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}"
+description = "Delete an alert rule definition."
+
+[[operations]]
+name = "ListActivityLogs"
+rust_name = "list_activity_logs"
+method = "GET"
+url_template = "/subscriptions/{subscriptionId}/providers/microsoft.insights/eventtypes/management/values"
+response_type = "EventDataCollection"
+description = "Provides the list of records from the activity logs."
